@@ -1,0 +1,99 @@
+﻿{% extends "base.html" %} 
+{% block titulo %} Registro {% endblock %} 
+{% block styles %} 
+<link rel="stylesheet" type="text/css" href="css/style.registro.css">
+{% endblock %}
+{% block contenido_principal %}
+<div class="inRegistro">
+  <h2 class="inMargenBottom">Registro</h2>
+  {% if error.tipo == 'GENERAL' %}
+  <div class="alert alert-danger" role="alert">
+    <i class="far fa-times-circle"></i> {{ error.mensaje }}
+  </div>
+  {% endif %}
+  <form method="post" action="/signup">
+    <div class="form-group">
+      <label for="serial">Serial Dispensador</label>
+      <input type="text" 
+        {% if error.tipo == 'SERIAL' %} class="form-control is-invalid"
+        {% else %} class="form-control" 
+        {% endif %} name="serial" id="serial"
+        placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX" 
+        value="{{ datos.serial }}" required="true" />
+      {% if error.tipo == 'SERIAL' %} 
+      <div class="invalid-feedback">{{ error.mensaje }}</div>
+      {% endif %}
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="nombre">Nombre</label>
+        <input type="text" class="form-control" name="nombre"
+          id="nombre" placeholder="Nombre" value="{{ datos.nombre }}"
+          required="true">
+      </div>
+      <div class="form-group col-md-6">
+        <label for="apellido">Apellido</label>
+        <input type="text" class="form-control" name="apellido"
+          id="apellido" placeholder="1er apellido"
+          value="{{ datos.apellido }}" required="true">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="tlfn">Teléfono</label>
+      <input type="text" class="form-control" name="tlfn" id="tlfn"
+        pattern="[0-9]{9,14}" placeholder="Número de teléfono"
+        title="Debe contener entre 9 y 14 números."
+        value="{{ datos.telefono }}" required="true" />
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" 
+        {% if error.tipo == 'EMAIL' %} class="form-control is-invalid"
+        {% else %} class="form-control" 
+        {% endif %} name="email" id="email"
+        placeholder="email@email.com" value="{{ datos.email }}" 
+        required="true" />
+      {% if error.tipo == 'EMAIL' %} 
+      <div class="invalid-feedback">{{ error.mensaje }}</div>
+      {% endif %}
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="password">Contraseña</label>
+        <input type="password" 
+          {% if error.tipo == 'PASSWORD' %} class="form-control is-invalid"
+          {% else %} class="form-control" 
+          {% endif %} name="password" id="password"
+          pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+          title="Debe contener al menos 8 caracteres. También debe contener 
+            al menos un número, una mayúscula y una minúscula."
+          placeholder="Contraseña segura" required="true" />
+        {% if error.tipo == 'PASSWORD' %} 
+        <div class="invalid-feedback">{{ error.mensaje }}</div>
+        {% endif %}
+      </div>
+      <div class="form-group col-md-6">
+        <label for="password2">Repetir Contraseña</label>
+        <input type="password" 
+          {% if error.tipo == 'PASSWORD' %} class="form-control is-invalid"
+          {% else %} class="form-control" 
+          {% endif %} name="password2" id="password2" 
+          pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+          title="Debe contener al menos 8 caracteres. También debe contener 
+            al menos un número, una mayúscula y una minúscula."
+          placeholder="Repetir la contraseña" required="true" />
+        {% if error.tipo == 'PASSWORD' %} 
+        <div class="invalid-feedback">{{ error.mensaje }}</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group inMargenTop">
+      <button type="submit" class="col-md-12 btn-lg btn-primary">CREAR
+        CUENTA</button>
+    </div>
+  </form>
+  <p class="text-center inMargenTop inTextoPeq">
+    ¿YA DISPONE DE UNA CUENTA? <a href="/login">INICIE SESIÓN</a>
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title>{% block titulo %} MedicineBox {% endblock %}</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- CSS Style -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+  {% block styles %} {% endblock %}
+  <!-- JavaScript -->
+  <script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+  <script src="js/jquery.maskedinput.js" type="text/javascript"></script>
+  <script src="js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="js/fontawesome-all.min.js" type="text/javascript"></script>
+  <script src="js/script.js" type="text/javascript"></script>
+  {% block scripts %} {% endblock %}
+</head>
+<body>
+  <!-- Barra de Navegación superior -->
+  {% block navbar %}
+  <!-- Posible contenido por defecto -->
+  {% endblock %}
+
+  <div class="container">
+    <!-- Contenido -->
+    {% block contenido_principal %}
+    <!-- Posible contenido por defecto -->
+    {% endblock %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+body{
+	font-family: 'FontAwesome', sans-serif;
+	background: #e9e9e9;
+  	color: #5e5e5e;
+  	border-top: 20px solid #e3f2fd;
+}
+
+.inRegistro{
+	margin: 3% 25%;
+	padding: 1.5em 1.5em 1em;
+	background: #fafafa;
+	border: 2px solid rgba(0,0,0,0.1); 
+}	
+
+/*Small devices (landscape phones, 576px and up)*/
+@media (max-width: 991.98px) {
+	.inRegistro{
+		margin: 10px 0;
+	}	
+}
+
+.inMargenTop{
+	margin-top: 15px;
+}
+
+.inMargenBottom{
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+.inTextoPeq{
+	font-size: 85%;
+	font-style: oblique;
+	color: graytext;
+}

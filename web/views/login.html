@@ -1,0 +1,39 @@
+﻿{% extends "base.html" %} 
+{% block titulo %} Login {% endblock %} 
+{% block styles %} 
+<link rel="stylesheet" type="text/css" href="css/style.registro.css">
+{% endblock %}
+{% block contenido_principal %}
+<div class="inRegistro">
+  <h2 class="inMargenBottom">Iniciar Sesión</h2>
+  {% if success %}
+  <div class="alert alert-success" role="alert">
+    <i class="far fa-check-circle"></i> {{ success }}
+  </div>
+  {% endif %}
+  {% if error %}
+  <div class="alert alert-danger" role="alert">
+    <i class="far fa-times-circle"></i> {{ error }}
+  </div>
+  {% endif %}
+  <form method="post" action="/login">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" name="email" id="email"
+        placeholder="email@email.com" required="true" />
+    </div>
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input type="password" class="form-control" 
+        name="password" id="password" required="true" />
+    </div>
+    <div class="form-group inMargenTop">
+      <button type="submit" class="col-md-12 btn-lg btn-primary">INICIAR
+        SESIÓN</button>
+    </div>
+  </form>
+  <p class="text-center inMargenTop inTextoPeq">
+    ¿AÚN NO DISPONE DE CUENTA? <a href="/signup">REGISTRARSE</a>
+  </p>
+</div>
+{% endblock %}
