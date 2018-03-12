@@ -19,10 +19,10 @@ var rest = require('request');
 app.set('rest',rest); 
 
 var mongo = require('mongodb');
-var gestorBD = require("./modules/gestorBD.js");
+var gestorBD = require("./db/db.gestor.js");
 gestorBD.init(app, mongo);
 
-var swig  = require('swig');
+var swig = require('swig');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); 
@@ -71,11 +71,13 @@ app.set('crypto',crypto);
 
 //*****************************  RUTAS  *****************************
 //Controladores por lógica
-require("./routes/rusuarios.js")(app, swig, gestorBD);
-require("./routes/radmin.js")(app, swig, gestorBD);
-require("./routes/rgeneral.js")(app, swig, gestorBD);
-require("./routes/rdashboard.js")(app, swig, gestorBD);
-require("./app_api/api.js")(app, gestorBD);
+require("./routes/route.usuarios.js")(app, swig, gestorBD);
+require("./routes/route.admin.js")(app, swig, gestorBD);
+require("./routes/route.general.js")(app, swig, gestorBD);
+require("./routes/route.dashboard.js")(app, swig, gestorBD);
+//API REST de acceso por el 
+require("./app_api/api.get.js")(app, gestorBD);
+require("./app_api/api.post.js")(app, gestorBD);
 //*******************************************************************
 
 

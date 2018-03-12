@@ -40,7 +40,7 @@ module.exports = function(app, swig, gestorBD) {
 			//Comprobar que el email no esté ya registrado
 			var criterio = { email: req.body.email };
 			
-			gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+			gestorBD.usuarios.obtenerUsuarios(criterio, function(usuarios) {
 				//Email no registrado - OK
 				if (usuarios === null || usuarios.length === 0) {
 					var criterio = { key: req.body.serial };
@@ -88,7 +88,7 @@ module.exports = function(app, swig, gestorBD) {
 									password: passcrypt
 								};
 								
-								gestorBD.insertarUsuario(usuario, function(id) {
+								gestorBD.usuarios.insertarUsuario(usuario, function(id) {
 									if (id === null){
 										req.session.error = {
 											mensaje: 'Error al registrar usuario. Inténtelo de nuevo más tarde',
@@ -161,7 +161,7 @@ module.exports = function(app, swig, gestorBD) {
 			password : seguro
 		};
 
-		gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+		gestorBD.usuarios.obtenerUsuarios(criterio, function(usuarios) {
 			if (usuarios === null || usuarios.length === 0) {
 				req.session.usuario = null;
 				

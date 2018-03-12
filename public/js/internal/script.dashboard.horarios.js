@@ -1,8 +1,5 @@
 $(document).ready(function(){
-	$("#serial").mask("*****-*****-*****-*****-*****", {
-		placeholder : " "
-	});
-	
+
 	//Fecha y hora del PRIMER pastillero
 	$('#date1').datetimepicker({
         locale: 'es',

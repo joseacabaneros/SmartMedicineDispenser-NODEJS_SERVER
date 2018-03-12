@@ -1,0 +1,115 @@
+﻿{% extends "base.dashboard.html" %} 
+
+{% block titulo %} Horarios {% endblock %} 
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="/css/external/bootstrap-datetimepicker.min.css">
+{% endblock %} 
+
+{% block scripts %}
+<script src="/js/external/moment.js" type="text/javascript"></script>
+<script src="/js/external/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<script src="/js/external/locale/es.js" charset="UTF-8"></script>
+{% endblock %} 
+
+{% block contenido_principal %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Dashboard</h1>
+      <h2>Programación de horarios</h2>
+      <form method="post" action="/dashboard">
+        <div class="row">
+          <div class='col-md-4'>
+            <div class="form-group">
+              <div class='input-group'>
+                <span class="input-group-addon"> <i
+                  class="far fa-circle"></i>
+                </span> <select class="form-control" name="pastillero"
+                  id="pastillero1" required="true">
+                  <option value="x">A y B</option>
+                  <option value="1">A</option>
+                  <option value="2">B</option>
+                </select> <span class="input-group-addon">Pastillero</span>
+              </div>
+            </div>
+          </div>
+          <div class='col-md-4'>
+            <div class="form-group">
+              <div class='input-group date' id="date1">
+                <input type='text' class="form-control"
+                  name="datepicker" placeholder="31/12/2000"
+                  required="true" />
+                <span class="input-group-addon"> <i
+                  class="fas fa-calendar-alt"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class='col-md-4'>
+            <div class="form-group">
+              <div class='input-group time' id="time1">
+                <input type='text' class="form-control"
+                  name="timepicker" placeholder="23:59"
+                  required="true" />
+                <span class="input-group-addon"> <i
+                  class="fas fa-clock"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class='col-md-4'>
+            <div class="form-group">
+              <div class='input-group'>
+                <span class="input-group-addon"> <i
+                  class="fas fa-pills"></i>
+                </span>
+                <input type='number' class="form-control"
+                  name="pastillas" id="pastillas1" value="1" min="1"
+                  max="3" required="true" />
+                <span class="input-group-addon">Pastilla(s)/Toma</span>
+              </div>
+            </div>
+          </div>
+          <div class='col-md-4'>
+            <div class="form-group">
+              <div class='input-group'>
+                <span class="input-group-addon"> <i
+                  class="fas fa-sync-alt"></i>
+                </span> <select class="form-control" name="rep" id="rep1"
+                  required="true">
+                  <option value="0">0</option>
+                  <option value="4">4</option>
+                  <option value="8">8</option>
+                  <option value="12">12</option>
+                  <option value="24">24</option>
+                  <option value="36">36</option>
+                  <option value="48">48</option>
+                </select> <span class="input-group-addon">Horas</span>
+              </div>
+            </div>
+          </div>
+          <div class='col-md-4'>
+            <div class="form-group">
+              <div class='input-group'>
+                <span class="input-group-addon"> <i
+                  class="fas fa-retweet"></i>
+                </span>
+                <input type='number' class="form-control"
+                  name="tomas" id="tomas1" value="1" min="1"
+                  max="12" required="true" />
+                <span class="input-group-addon">Toma(s)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="col-md-12 btn btn-primary">Programar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

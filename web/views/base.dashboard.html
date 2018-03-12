@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title>{% block titulo %} Dashboard {% endblock %}</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="/img/favicon.ico">
+  <!-- CSS Style -->
+  <link rel="stylesheet" type="text/css" href="/css/external/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/css/internal/style.dashboard.css">
+  {% block styles %} {% endblock %}
+  <!-- JavaScript -->
+  <script src="/js/external/jquery-3.3.1.min.js" type="text/javascript"></script>
+  <script src="/js/external/bootstrap.min.js" type="text/javascript"></script>
+  <script src="/js/external/fontawesome-all.min.js" type="text/javascript"></script>
+  <script src="/js/internal/script.dashboard.horarios.js" type="text/javascript"></script>
+  {% block scripts %} {% endblock %}
+</head>
+<body>
+  <div class="panel">
+    <div class="panel-interior">
+      <div class="menu" role="navigation" aria-label="menu">
+        <ul class="menu-interior">
+          <li id="menu-inicio">
+            <a aria-label="SMD inicio" role="menuitem" href="/">
+              <i class="fas fa-pills fa-3x"></i>
+            </a>
+          </li>
+          <li>
+            <a aria-label="Programación horarios" role="menuitem" href="/dashboard"
+              {% if menu == 'horarios' %} id="item-select" {% endif %}>
+              <span class="icono">
+                <i class="far fa-clock fa-2x"></i>
+              </span>
+              <span class="texto">Horarios</span>
+            </a>
+          </li>
+          <li>
+            <a aria-label="Dispensador" role="menuitem" href="/dashboard/dispenser"
+              {% if menu == 'dispensador' %} id="item-select" {% endif %}>
+              <span class="icono">
+                <i class="far fa-chart-bar fa-2x"></i>
+              </span>
+              <span class="texto">Dispensador</span>
+            </a>
+          </li>
+          <li>
+            <a aria-label="Perfil" role="menuitem" href="/dashboard/profile"
+              {% if menu == 'perfil' %} id="item-select" {% endif %}>
+              <span class="icono">
+                <i class="far fa-user fa-2x"></i>
+              </span>
+              <span class="texto">Perfil</span>
+            </a>
+          </li>
+          <li>
+            <a aria-label="Ajustes" role="menuitem" href="/dashboard/settings"
+              {% if menu == 'ajustes' %} id="item-select" {% endif %}>
+              <span class="icono">
+                <i class="fas fa-cogs fa-2x"></i>
+              </span>
+              <span class="texto">Ajustes</span>
+            </a>
+          </li>
+          <li id="menu-cerrar-sesion">
+            <a aria-label="Cerrar sesión" role="menuitem" href="/logout">
+              <span class="icono">
+                <i class="fas fa-sign-out-alt fa-2x"></i>
+              </span>
+              <span class="texto">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="pagina">
+        <!-- Contenido -->
+        {% block contenido_principal %}
+        <!-- Posible contenido por defecto -->
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>
