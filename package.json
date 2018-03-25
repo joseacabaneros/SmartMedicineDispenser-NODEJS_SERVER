@@ -19,6 +19,8 @@
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "moment": "^2.21.0",
+    "moment-timezone": "^0.5.14",
     "mongodb": "^2.2.33",
     "request": "^2.83.0",
     "swig": "^1.4.2"

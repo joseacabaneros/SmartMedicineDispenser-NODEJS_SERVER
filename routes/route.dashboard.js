@@ -1,11 +1,66 @@
-module.exports = function(app, swig, gestorBD) {
+module.exports = function(app, swig, gestorBD, util) {
 	
-	//DASHBOARD(HORARIOS) - GET vista
-	app.get("/dashboard", function(req, res) {
-		var respuesta = swig.renderFile('web/views/dashboard.horarios.html', {
-			menu: "horarios"
+	//DASHBOARD(PASTILLEROS/HORARIOS) - GET vista
+	app.get("/dashboard/pillbox/:pastillero", function(req, res) {
+		//Obtener posicion actual del pastillero A
+		var criterio = { "key" : req.session.usuario.serial };
+		
+		var pastilleroLet = req.params.pastillero;
+		var pastilleroNum = ((pastilleroLet === "A") ? '1' : '2'); //A o B
+		
+		gestorBD.serials.obtenerSerials(criterio, function(serial){
+			var criterio = {
+				serial: req.session.usuario.serial,
+				pastillero: pastilleroNum,
+				unixtime: { $gte: util.unixtimezonenow() }
+			};
+			
+			//Obtener siguientes horarios programados
+			gestorBD.horarios.obtenerProgramacion(criterio, function(horarios){
+				var horariosForDate = [];
+				
+				horarios.forEach(function(h){
+					var horarioAux = {
+						fecha: util.moment(h.unixtime * 1000).tz('GMT').locale('es')
+							.format("dddd DD MMMM YYYY"),
+						hora: util.moment(h.unixtime * 1000).tz('GMT').locale('es')
+							.format("HH:mm"),
+						pastillas: h.pastillas,
+						id: h._id
+					};
+					
+					horariosForDate.push(horarioAux);
+				});
+				
+				//Clases para pintar los colores correspondientes en el pastillero SVG
+				var clasesSvg = [];
+				var cont = 0;
+				//Pastillas tomadas
+				for(var i = 0 ; i < serial[0].posicion[pastilleroLet]; i++){
+					clasesSvg[cont] = "past-pos-tomada";
+					cont++;
+				}
+				//Pastillas programadas
+				for(i = 0 ; i < horariosForDate.length; i++){
+					clasesSvg[cont] = "past-pos-programada";
+					cont++;
+				}
+				//Pastillas libres (sin programar y sin tomar)
+				for(i = 0 ; i < (12-serial[0].posicion[pastilleroLet]-horariosForDate.length); i++){
+					clasesSvg[cont] = "past-pos-libre";
+					cont++;
+				}
+				
+				var respuesta = swig.renderFile('web/views/dashboard.horarios.html', {
+					menu: "horarios",
+					pastillero: pastilleroLet,
+					posicion: serial[0].posicion[pastilleroLet],
+					horarios: horariosForDate,
+					clasessvg: clasesSvg
+				});
+				res.send(respuesta);
+			});
 		});
-		res.send(respuesta);
 	});
 	
 	//DASHBOARD(DISPENSADOR) - GET vista
@@ -66,7 +121,7 @@ module.exports = function(app, swig, gestorBD) {
 					mensaje: 'Error al programar horario. Inténtelo de nuevo más tarde',
 					tipo: 'GENERAL'
 				};
-				res.redirect("/dashboard");
+				res.redirect("/dashboard/pillbox/A");
 			}
 		}
 		
@@ -83,10 +138,15 @@ module.exports = function(app, swig, gestorBD) {
 					tomadaIR: false
 				};
 				
-				gestorBD.insertarProgramacion(horario, notInsert);
+				gestorBD.horarios.insertarProgramacion(horario, notInsert);
 			}
 		});
 		
-		res.redirect("/dashboard");
+		//Redirecionar flujo al pastillero programado
+		if(pastilleros[0] === "2"){
+			res.redirect("/dashboard/pillbox/B");
+		}else{
+			res.redirect("/dashboard/pillbox/A");
+		}
 	});
 };

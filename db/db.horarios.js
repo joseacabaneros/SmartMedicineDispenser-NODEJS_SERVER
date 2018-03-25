@@ -28,7 +28,7 @@ module.exports = {
 				funcionCallback(null);
 			}else{
 				var collection = db.collection('horarios');
-				collection.find(criterio).toArray(function(err, horarios){
+				collection.find(criterio).sort( { unixtime: 1 } ).toArray(function(err, horarios){
 					if(err){
 						funcionCallback(null);
 					}else{

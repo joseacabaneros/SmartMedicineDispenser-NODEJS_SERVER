@@ -172,7 +172,7 @@ module.exports = function(app, swig, gestorBD) {
 	
 				var tipousuario = usuarios[0].tipo;
 				if(tipousuario === "USUARIO"){
-					res.redirect("/dashboard");
+					res.redirect("/dashboard/pillbox/A");
 				}else{
 					res.redirect("/admin");
 				}

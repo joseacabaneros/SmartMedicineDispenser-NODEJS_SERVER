@@ -1,0 +1,166 @@
+.pagina{
+    overflow-y: auto;
+}
+
+.pagina-interior{
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+}
+
+.pastilleros{
+    overflow-y: auto;
+ 	padding: 0;
+}
+
+.pastilleros-interior{
+	padding: 15px 30px;
+}
+
+.programacion{
+	height: 100%;
+    border-left: 1px solid #EEEEEE;
+    overflow-y: auto;
+}
+
+hr{
+	margin-top: 0;
+}
+
+.informacion{
+	margin-top: 15px;
+}
+
+small{
+	color: gray;
+}
+
+/* Tab Pastilleros */
+.tab-pastilleros{
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    border-bottom: 1px solid #DDDDDD;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.tab-pastilleros li{
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    text-transform: uppercase;
+    
+    font-size: 20px;
+    
+    
+   	justify-content: center;
+   	align-items: center;
+    line-height: 1.2;
+    height: 60px;
+}
+
+.tab-pastilleros li a{
+	width: 100%;
+	text-decoration: none;
+	text-align: center;
+	color: #999999;
+}
+
+.pastillero-seleccionado{
+	color: #FFFFFF !important;
+	background-color: #1AB188;
+}
+
+.pastillero-seleccionado a{
+	color: #FFFFFF !important;
+}
+
+.margin-bottom{
+	margin-bottom: 10px;
+}
+
+.numero-pastillas{
+	margin: 0;
+	font-size: 20px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.label-num-pastillas{
+	color: #999999;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Para pantallas < 991px [lg-bootstrap]*/
+@media only screen and (max-width: 991px){
+	.programacion{
+		border: none;
+	}
+}
+
+
+
+/* SVG Pastillero*/
+.past-exterior{
+	fill:#808080;
+	stroke:#606060;
+	stroke-width:10;
+	stroke-miterlimit:10;
+}
+
+.past-pos-neutro{
+	fill:#606060;
+	stroke:#471B00;
+	stroke-width:2;
+	stroke-miterlimit:10;
+}
+
+/* Rojo */ 
+.past-pos-tomada{
+	fill:#FB3838;
+	stroke:#9C0000;
+	stroke-width:2;
+	stroke-miterlimit:10;
+}
+
+/* Azul */ 
+.past-pos-programada{
+	fill:#58ACFA;
+	stroke:#0431B4;
+	stroke-width:2;
+	stroke-miterlimit:10;
+}
+
+/* Verde */
+.past-pos-libre{
+	fill:#00D113;
+	stroke:#044D00;
+	stroke-width:2;
+	stroke-miterlimit:10;
+	
+	-webkit-transition: fill 2s ease-out;
+ 	-moz-transition: fill 2s ease-out;
+	-o-transition: fill 2s ease-out;
+	transition: fill 2s ease-out;
+}
+
+.progress-bar-danger{
+	background-color: #FB3838;
+	width: 0%;
+}
+
+.progress-bar-info{
+	background-color: #58ACFA;
+	width: 0%;
+}
+
+.progress-bar-success{
+	background-color: #00D113;
+	width: 0%;
+}

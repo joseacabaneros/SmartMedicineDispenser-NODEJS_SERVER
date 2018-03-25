@@ -18,15 +18,25 @@ var crypto = require('crypto');
 var rest = require('request');
 app.set('rest',rest); 
 
+//Base de datos MongoDB
 var mongo = require('mongodb');
 var gestorBD = require("./db/db.gestor.js");
 gestorBD.init(app, mongo);
 
+//Swig - HTML dinamico y distribuido 
 var swig = require('swig');
 
+//Parser de formularios
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: true })); 
+
+//Control de usos horarios
+var moment = require('moment-timezone');
+
+//Control de usos horarios
+var util = require("./util/util.js");
+util.init(moment);
 //*******************************************************************
 
 
@@ -57,7 +67,7 @@ routerAdminSession.use(function(req, res, next){
 	 }
 });
 //Aplicar RouterADMINSession
-app.use("/admin", routerAdminSession);
+//app.use("/admin", routerAdminSession);
 //*******************************************************************
 
 
@@ -74,10 +84,10 @@ app.set('crypto',crypto);
 require("./routes/route.usuarios.js")(app, swig, gestorBD);
 require("./routes/route.admin.js")(app, swig, gestorBD);
 require("./routes/route.general.js")(app, swig, gestorBD);
-require("./routes/route.dashboard.js")(app, swig, gestorBD);
+require("./routes/route.dashboard.js")(app, swig, gestorBD, util);
 //API REST de acceso por el 
-require("./app_api/api.get.js")(app, gestorBD);
-require("./app_api/api.post.js")(app, gestorBD);
+require("./api/api.get.js")(app, gestorBD, util);
+require("./api/api.post.js")(app, gestorBD);
 //*******************************************************************
 
 

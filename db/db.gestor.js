@@ -1,5 +1,8 @@
 module.exports = {
+	mongo: null,
 	init : function(app, mongo){
+		this.mongo = mongo;
+		
 		this.usuarios.init(app, mongo);
 		this.serials.init(app, mongo);
 		this.horarios.init(app, mongo);

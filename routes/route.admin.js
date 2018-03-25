@@ -15,15 +15,19 @@ module.exports = function(app, swig, gestorBD) {
 	app.post('/admin', function(req, res) {
 		var criterio = { key: req.body.serial };
 		
-		gestorBD.obtenerSerials(criterio, function(serials) {
+		gestorBD.serials.obtenerSerials(criterio, function(serials) {
 			//Serial aun no creado - OK
 			if (serials === null || serials.length === 0) {
 				var serial = {
 					serial: req.body.serial,
-					usuarios: 0
+					usuarios: 0,
+					posicion: {
+						A: 0, 
+						B: 0
+					}
 				};
 				
-				gestorBD.insertarSerial(serial, function(id) {
+				gestorBD.serials.insertarSerial(serial, function(id) {
 					if (id === null){
 						req.session.error = {
 							mensaje: 'Error al registrar serial. Inténtelo de nuevo más tarde',
