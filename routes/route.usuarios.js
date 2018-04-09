@@ -151,7 +151,7 @@ module.exports = function(app, swig, gestorBD) {
 		res.send(respuesta);
 	});
 
-	//REGISTRO de usuario - POST procesar datos de formulario de login
+	//LOGIN de usuario - POST procesar datos de formulario de login
 	app.post("/login", function(req, res) {
 		var seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
 				.update(req.body.password).digest('hex');

@@ -44,7 +44,7 @@ util.init(moment);
 //RouterUSUARIOSession
 var routerUsuarioSession = express.Router(); 
 routerUsuarioSession.use(function(req, res, next){
-	console.log("routerUsuarioSession");
+	//console.log("routerUsuarioSession");
 	var usuario = req.session.usuario;
 	if(usuario !== undefined && usuario.tipo === "USUARIO"){
 		next();
@@ -53,12 +53,12 @@ routerUsuarioSession.use(function(req, res, next){
 	}
 });
 //Aplicar RouterUSUARIOSession
-//app.use("/dashboard", routerUsuarioSession);
+app.use("/dashboard", routerUsuarioSession);
 
 //RouterADMINSession
 var routerAdminSession = express.Router(); 
 routerAdminSession.use(function(req, res, next){
-	 console.log("routerAdminSession");
+	 //console.log("routerAdminSession");
 	 var usuario = req.session.usuario;
 	 if(usuario !== undefined && usuario.tipo === "ADMIN"){
 		 next();
@@ -67,7 +67,7 @@ routerAdminSession.use(function(req, res, next){
 	 }
 });
 //Aplicar RouterADMINSession
-//app.use("/admin", routerAdminSession);
+app.use("/admin", routerAdminSession);
 //*******************************************************************
 
 

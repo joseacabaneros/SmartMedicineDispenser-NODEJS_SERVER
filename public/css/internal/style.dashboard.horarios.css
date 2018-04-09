@@ -1,14 +1,5 @@
-.pagina{
-    overflow-y: auto;
-}
-
-.pagina-interior{
-    height: 100%;
-    padding: 0;
-    overflow: hidden;
-}
-
 .pastilleros{
+	height: 100%;
     overflow-y: auto;
  	padding: 0;
 }
@@ -21,6 +12,41 @@
 	height: 100%;
     border-left: 1px solid #EEEEEE;
     overflow-y: auto;
+}
+
+.btn-programacion {
+	display: none;
+	
+	color: white;
+	background: #1AB188;
+	outline: none;
+	font-size: 18px;
+	
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	
+	width: 50px;
+	height: 50px;
+	
+	border: 0;
+	border-radius: 50%;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+	
+	-o-transition: .3s;
+	-ms-transition: .3s;
+	-moz-transition: .3s;
+	-webkit-transition: .3s;
+	transition: .3s;
+	
+	margin-bottom: 10px;
+	margin-right: 10px;
+	
+	z-index: 1;
+}
+
+.btn-programacion:hover {
+	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
 hr{
@@ -47,6 +73,8 @@ small{
     justify-content: center;
     font-size: 14px;
     letter-spacing: 1px;
+    
+    z-index: 1;
 }
 
 .tab-pastilleros li{
@@ -56,12 +84,12 @@ small{
     text-transform: uppercase;
     
     font-size: 20px;
-    
+    background-color: #FFFFFF;
     
    	justify-content: center;
    	align-items: center;
     line-height: 1.2;
-    height: 60px;
+    height: 50px;
 }
 
 .tab-pastilleros li a{
@@ -73,15 +101,64 @@ small{
 
 .pastillero-seleccionado{
 	color: #FFFFFF !important;
-	background-color: #1AB188;
+	background-color: #1AB188 !important;
 }
 
 .pastillero-seleccionado a{
 	color: #FFFFFF !important;
 }
 
+/* Para pantallas < 992px */
+@media only screen and (max-width: 992px){
+	.programacion{
+		display: none;
+		border: none;
+	}
+	
+	.tab-pastilleros{
+		position: fixed;
+	}
+	
+	.pastilleros-interior{
+		margin-top: 60px;
+		padding: 0 15px 40px;
+	}
+	
+	.vertical-align {
+	    display: inline !important;
+	}
+	
+	.btn-programacion {
+		display: inline;
+		margin-bottom: 70px;
+	}
+}
+
+/* Para pantallas < 768px y portrait */
+@media (max-width: 768px) and (orientation:portrait) {
+    .col-xs-5 {
+        width: 100%;
+    }
+    
+    .col-xs-7 {
+        width: 100%;
+    }
+}
+
+/* Para pantallas < 768px y landscape */
+@media (max-width: 768px) and (orientation:landscape) {
+    .vertical-align {
+	    display: flex !important;
+	}
+}
+
 .margin-bottom{
 	margin-bottom: 10px;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
 }
 
 .numero-pastillas{
@@ -96,14 +173,6 @@ small{
     font-size: 12px;
     line-height: 1.5;
 }
-
-/* Para pantallas < 991px [lg-bootstrap]*/
-@media only screen and (max-width: 991px){
-	.programacion{
-		border: none;
-	}
-}
-
 
 
 /* SVG Pastillero*/
@@ -163,4 +232,25 @@ small{
 .progress-bar-success{
 	background-color: #00D113;
 	width: 0%;
+}
+
+.div--alert_programacion{
+	display: none;
+}
+
+#input-date input{
+	background-color: #FFFFFF;
+}
+
+#input-time input{
+	background-color: #FFFFFF;
+}
+
+/* Table horarios programados */
+.centro-item{
+	text-align: center;
+}
+
+.table > tbody > tr > td {
+     vertical-align: middle;
 }

@@ -88,6 +88,13 @@ li #item-select{
 	background-color: white;
 	width: 100%;
 	height: 100vh;
+	overflow-y: auto;
+}
+
+.pagina-interior{
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
 }
 
 /* Para pantallas > 1400px */
@@ -99,6 +106,10 @@ li #item-select{
 	}
 	
 	.menu{
+		height: calc(100vh - 32px);
+	}
+	
+	.pagina{
 		height: calc(100vh - 32px);
 	}
 }
@@ -119,8 +130,8 @@ li #item-select{
 	}
 }
 
-/* Para pantallas < 767px */
-@media only screen and (max-width: 767px){
+/* Para pantallas < 992px */
+@media only screen and (max-width: 992px){
 
 	.panel-interior{
 		flex-direction: column;
