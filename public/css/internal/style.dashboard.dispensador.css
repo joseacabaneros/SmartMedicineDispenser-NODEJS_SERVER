@@ -1,0 +1,218 @@
+@font-face {
+    font-family: OpenSansLight;
+    src: url(../fonts/OpenSans/OpenSans-Light.ttf);
+}
+
+.pagina-interior{
+	overflow-y: auto;
+}
+
+/* PARA LOS PANELES DE INFORMACION INICIALES */
+
+.box {
+    float: left;
+    position: relative;
+    width: 31%;
+    height: 120px;
+    margin: 1.165%;
+    color: white;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 2px solid #FFFFFF;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+    
+.purple {
+  	background-color: #D7BDE2;
+}
+
+.blue {
+	background-color: #6BB8E8;
+}
+
+.orange {
+	background-color: #EB9561;
+}
+
+.yellow{
+	background-color: #F4D03F;
+}
+
+.blue-dark {
+	background-color: #A9CCE3;
+}
+
+.red{
+	background-color: #CD6155;
+}
+
+.value-box {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	font-size: 2.5em;
+	text-align: left;
+}
+
+.title-box {
+	font-family: 'OpenSansLight';
+	position: absolute;
+	top: 60px;
+	right: 8px;
+	font-size: 1.6em;
+	font-weight: 300;
+}
+
+.icon-box {
+	position: absolute;
+	left: 12px;
+	
+	font-size: 5.0em;
+	color: rgba(255, 255, 255, 0.25);
+}
+
+.viewMore-box {
+	position: absolute;
+	left: 0; right: 0; bottom: 0px;
+	text-align: center;
+	height: 24px;
+	line-height: 24px;
+	vertical-align: middle;
+	background-color: rgba(0, 0, 0, 0.1);
+	font-size: 0.8rem;
+}
+
+.box-ok {
+	border: 2px solid #229954;
+	color: #229954;
+}
+
+.icon-ok {
+	color: rgba(34, 153, 84, 0.7);
+}
+
+.viewMore-ok{
+	background-color: rgba(34, 153, 84, 0.4);
+}
+
+.box-wrong {
+	border: 2px solid #CB4335;
+	color: #CB4335;
+}
+
+.icon-wrong {
+	color: rgba(203, 67, 53, 0.7);
+}
+
+.viewMore-wrong{
+	background-color: rgba(203, 67, 53, 0.4);
+}
+
+/* PARA LOS GRAFICOS DE TEMEPERATURA Y HUMEDAD */
+.axisLabels {
+    font-size: 1.6rem;
+    fill: #AAAAAA;
+    font-weight: 300;
+}
+
+.title {
+    font-size: 2.8rem;
+    fill: #4F4F4F;
+    font-weight: 300;
+}
+
+.subtitle {
+    font-size: 1.4rem;
+    fill: #AAAAAA;
+    font-weight: 300;
+}
+
+/* Para pantallas < 700px */
+@media only screen and (max-width: 700px){
+	.box {
+		width: 31%;
+    	margin: 1.165%;
+		height: 100px;
+	}
+	
+	.icon-box {
+		font-size: 4.0em;
+	}
+	
+	.value-box{
+		font-size: 1.8em;
+	}
+	
+	.title-box{
+		font-size: 1.4em;
+		top: 45px;
+	}
+	
+	.title {
+	    font-size: 1.9rem;
+	}
+	
+	.legendTitle {
+	   	font-size: 1.3rem;
+	}
+	
+	.axisLabels {
+	    font-size: 0.8rem;
+	}
+}
+
+/* Para pantallas < 450px y portrait */
+@media (max-width: 450px) and (orientation:portrait) {
+    .box {
+		width: 46%;
+		margin: 2%;
+		height: 80px;
+	}
+	
+	.icon-box {
+		font-size: 3.0em;
+	}
+	
+	.value-box{
+		font-size: 1.5em;
+	}
+	
+	.title-box{
+		font-size: 1em;
+		top: 35px;
+	}
+	
+	.viewMore-box {
+		height: 20px;
+	}
+}
+
+/* Para pantallas < 450px y landscape */
+@media (max-width: 450px) and (orientation:landscape) {
+    .box {
+		width: 31%;
+    	margin: 1.165%;
+		height: 80px;
+	}
+	
+	.icon-box {
+		font-size: 3.0em;
+	}
+	
+	.value-box{
+		font-size: 1.5em;
+	}
+	
+	.title-box{
+		font-size: 1em;
+		top: 35px;
+	}
+	
+	.viewMore-box {
+		height: 20px;
+	}
+}
+
+

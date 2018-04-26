@@ -3,21 +3,116 @@
 {% block titulo %} Dispensador {% endblock %} 
 
 {% block styles %}
+<link rel="stylesheet" type="text/css" href="/css/internal/style.dashboard.dispensador.css">
 <link rel="stylesheet" type="text/css" href="/css/internal/style.dashboard.dispensador.CHART.tiempovida.css">
+<link rel="stylesheet" type="text/css" href="/css/internal/style.dashboard.dispensador.CHART.temperatura.css">
+<link rel="stylesheet" type="text/css" href="/css/internal/style.dashboard.dispensador.CHART.humedad.css">
 {% endblock %} 
 
 {% block scripts %}
 <script src="/js/external/d3.min.js" type="text/javascript"></script>
+<script src="/js/internal/script.dashboard.dispensador.js" type="text/javascript"></script>
 <script src="/js/internal/script.dashboard.dispensador.CHART.tiempovida.js" type="text/javascript"></script>
+<script src="/js/internal/script.dashboard.dispensador.CHART.temperatura.js" type="text/javascript"></script>
+<script src="/js/internal/script.dashboard.dispensador.CHART.humedad.js" type="text/javascript"></script>
 {% endblock %} 
 
 {% block contenido_principal %}
 
 <div class="pagina-interior">
   <div class="container-fluid">
-    <h3>Dispensador</h3>
-    <hr/>
+    <div class="row">
+      <div class="box orange">
+        <div class="icon-box">
+          <i class="fas fa-thermometer-half"></i>
+        </div>
+        <div class="value-box"><span class="count">{{ panelInfo.temperatura }}</span> ºC</div>
+        <div class="title-box">Temperatura</div>
+        <div class="viewMore-box"></div>
+      </div>
+      <div class="box blue">
+        <div class="icon-box">
+          <i class="fas fa-tint"></i>
+        </div>
+        <div class="value-box"><span class="count">{{ panelInfo.humedad }}</span> %</div>
+        <div class="title-box">Humedad</div>
+        <div class="viewMore-box"></div>
+      </div>
+      <div class="box red">
+        <div class="icon-box">
+          <i class="fas fa-thermometer-three-quarters"></i>
+        </div>
+        <div class="value-box"><span class="count">{{ panelInfo.icalor }}</span> ºC</div>
+        <div class="title-box">Indice Calor</div>
+        <div class="viewMore-box"></div>
+      </div>
+      <div {% if panelInfo.conexion == "SI" %} class="box purple box-ok" 
+           {% elseif panelInfo.conexion == "NO" %} class="box purple box-wrong" 
+           {% endif %} >
+        <div {% if panelInfo.conexion == "SI" %} class="icon-box"
+             {% elseif panelInfo.conexion == "NO" %} class="icon-box icon-wrong"
+             {% endif %} >
+          <i class="far fa-calendar-check"></i>
+        </div>
+        <div class="value-box" data-value="250">{{ panelInfo.conexion }}</div>
+        <div class="title-box">Conexión</div>
+        <div {% if panelInfo.conexion == "SI" %} class="viewMore-box viewMore-ok"
+             {% elseif panelInfo.conexion == "NO" %} class="viewMore-box viewMore-wrong"
+             {% endif %}></div>
+      </div>
+      <div {% if panelInfo.gas == "NO" %} class="box yellow box-ok" 
+           {% elseif panelInfo.gas == "SI" %} class="box yellow box-wrong" 
+           {% endif %} >
+        <div {% if panelInfo.gas == "NO" %} class="icon-box"
+             {% elseif panelInfo.gas == "SI" %} class="icon-box icon-wrong"
+             {% endif %} >
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="value-box">{{ panelInfo.gas }}</div>
+        <div class="title-box">Detección Gas</div>
+        <div {% if panelInfo.gas == "NO" %} class="viewMore-box viewMore-ok"
+             {% elseif panelInfo.gas == "SI" %} class="viewMore-box viewMore-wrong"
+             {% endif %}></div>
+      </div>
+      <div {% if panelInfo.caida == "NO" %} class="box blue-dark box-ok" 
+           {% elseif panelInfo.caida == "SI" %} class="box blue-dark box-wrong" 
+           {% endif %} >
+        <div {% if panelInfo.caida == "NO" %} class="icon-box"
+             {% elseif panelInfo.caida == "SI" %} class="icon-box icon-wrong"
+             {% endif %} >
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="value-box">{{ panelInfo.caida }}</div>
+        <div class="title-box">Detección Caida</div>
+        <div {% if panelInfo.caida == "NO" %} class="viewMore-box viewMore-ok"
+             {% elseif panelInfo.caida == "SI" %} class="viewMore-box viewMore-wrong"
+             {% endif %}></div>
+      </div>
+    </div>
     <div id="tiempoVida"></div>
+    <div id="temperaturaChart"></div>
+    <div id="humedadChart"></div>
+    <script>
+    	var dataTiempoVida = {{ dataTiempoVida | json | safe }};
+    	var dataTempHume = {{ dataTempHume | json | safe }};
+    	
+    	//Rederizar visualizaciones al iniciar pagina
+    	initializeTiempoVida(dataTiempoVida);
+    	initializeTemperatura(dataTempHume);
+    	initializeHumedad(dataTempHume);
+    	
+    	//Repintar visualizaciones cuando se produzca un resize de la ventana
+    	$(window).resize(function() {
+			$('#tiempoVida').empty();
+			initializeTiempoVida(dataTiempoVida);
+			
+			$('#temperaturaChart').empty();
+			initializeTemperatura(dataTempHume);
+			
+			$('#humedadChart').empty();
+			initializeHumedad(dataTempHume);
+    	});
+    </script>
   </div>
 </div>
 

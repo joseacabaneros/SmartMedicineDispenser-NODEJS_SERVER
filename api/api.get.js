@@ -20,11 +20,11 @@ module.exports = function(app, gestorBD, util) {
 			} else {
 				var strJson = {};
 				strJson["Numero horarios"] = horarios.length;
-				var key = 'Horarios programados';
-				strJson[key] = [];
+				var hprogramados = 'Horarios programados';
+				strJson[hprogramados] = [];
 				
 				//Comprobar posicion actual del/los pastillero/s
-				var criterio = { "key" : req.params.serial };
+				var criterio = { serial : req.params.serial };
 				gestorBD.serials.obtenerSerials(criterio, function(serial) {	
 					horarios.forEach(function(h) {
 						//Comprobar si la pastilla ya ha sido tomada, bien confirmada con el boton
@@ -51,7 +51,7 @@ module.exports = function(app, gestorBD, util) {
 						            pastillas: pastillas
 								};
 								
-								strJson[key].push(dataHorario);
+								strJson[hprogramados].push(dataHorario);
 							}
 						}
 					});
@@ -64,10 +64,33 @@ module.exports = function(app, gestorBD, util) {
 		});
 	}
 	
+	function updateUltimoPing(req, res, serial){
+		var criterio = { serial : serial };
+		
+		gestorBD.serials.obtenerSerials(criterio, function(serials){
+			if (serials === null || serials.length === 0){
+				res.status(204);
+				res.send();
+			} else {
+				serials[0].ultimoping = util.unixTimezoneNow();
+				gestorBD.serials.modificarSerial(criterio, serials[0], function(result) {
+					if(result === null){
+						res.status(204);
+						res.send();
+					}else{
+						//Consultar si toca dispensar medicamento
+						getHorariosToca(req, res);
+					}
+				});
+			}
+		});
+	}
+	
 	//------------------------------------ GET API ---------------------------------------------
 	
 	app.get("/api/schedule/:serial", function(req, res) {
 		//----------------- Almacenar datos: ping, temperatura, humedad, gas -------------------
+		console.log(req.query);
 		
 		//Se almacenan los ping en rangos de 10 minutos, por ello los minutos de cada
 		//fecha y hora son multiplos de 10
@@ -78,14 +101,17 @@ module.exports = function(app, gestorBD, util) {
 		var criterio = { unixtime: unixtime };
 		
 		gestorBD.datos.obtenerDatos(criterio, function(datos) {
-			//Insertar una nueva fecha de pings
+			//Insertar una nueva fecha de pings, temperatura, humedad, icalor, gas y vibracion
 			if(datos === null || datos.length === 0){
 				var dato = {
+					serial: req.params.serial,
 					unixtime: unixtime,
 					pings: 1,
-					temperatura: 0,
-					humedad: 0,
-					gas: false
+					temperatura: parseFloat(req.query.temp),
+					humedad: parseFloat(req.query.hume),
+					icalor: parseFloat(req.query.icalor),
+					gas: (req.query.gas === '1'),
+					vibracion: (req.query.vibracion === '1')
 				};
 				
 				gestorBD.datos.insertarDato(dato, function(id){
@@ -94,14 +120,28 @@ module.exports = function(app, gestorBD, util) {
 						res.status(204);
 						res.send();
 					}else{
-						//Consultar si toca dispensar medicamento
-						getHorariosToca(req, res);
+						//Actualizar serial con la fecha (unixtime) del ultimo ping
+						//Despues, consultar si toca dispensar medicamento
+						updateUltimoPing(req, res, req.params.serial);
 					}
 				});
 			//Aumentar en 1 los pings de dicha fecha-hora multiplo de 10 minutos
+			//Media de temperatura, humedad e icalor
+			//Registrar si ha habido gas o vibracion
 			}else{
 				var criterio = { "_id" : gestorBD.mongo.ObjectID(datos[0]._id) };
+				
+				//Actualizar datos
 				datos[0].pings++;
+				datos[0].temperatura = Math.round(((datos[0].temperatura + parseFloat(req.query.temp)) / 2) * 100) / 100;
+				datos[0].humedad = Math.round(((datos[0].humedad + parseFloat(req.query.hume)) / 2) * 100) / 100;
+				datos[0].icalor = Math.round(((datos[0].icalor + parseFloat(req.query.icalor)) / 2) * 100) / 100;
+				if(!datos[0].gas && req.query.gas === '1'){
+					datos[0].gas = true;
+				}
+				if(!datos[0].vibracion && req.query.vibracion === '1'){
+					datos[0].vibracion = true;
+				}
 				
 				gestorBD.datos.actualizarDato(criterio, datos[0], function(result) {
 					if (result === null){
@@ -109,8 +149,9 @@ module.exports = function(app, gestorBD, util) {
 						res.status(204);
 						res.send();
 					}else{
-						//Consultar si toca dispensar medicamento
-						getHorariosToca(req, res);
+						//Actualizar serial con la fecha (unixtime) del ultimo ping
+						//Despues, consultar si toca dispensar medicamento
+						updateUltimoPing(req, res, req.params.serial);
 					}
 				});
 			}

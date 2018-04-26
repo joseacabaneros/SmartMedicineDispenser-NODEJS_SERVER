@@ -2,8 +2,8 @@ module.exports = function(app, swig, gestorBD, util) {
 	
 	//DASHBOARD(PASTILLEROS/HORARIOS) - GET vista
 	app.get("/dashboard/pillbox/:pastillero", function(req, res) {
-		//Obtener posicion actual del pastillero A
-		var criterio = { "key" : req.session.usuario.serial };
+		//Obtener posicion actual del pastillero seleccionado (parametro)
+		var criterio = { serial : req.session.usuario.serial };
 		var pastillero = req.params.pastillero; //A o B
 		
 		gestorBD.serials.obtenerSerials(criterio, function(serial){
@@ -115,9 +115,9 @@ module.exports = function(app, swig, gestorBD, util) {
 				}
 				
 				var respuesta = swig.renderFile('web/views/dashboard.horarios.html', {
+					menu: "horarios",
 					error: req.session.error,
 					datos: req.session.datos,
-					menu: "horarios",
 					pastillero: pastillero,
 					horarios: horariosForDate,
 					clasessvg: clasesSvg,
@@ -157,10 +157,101 @@ module.exports = function(app, swig, gestorBD, util) {
 	
 	//DASHBOARD(DISPENSADOR) - GET vista
 	app.get("/dashboard/dispenser", function(req, res) {
-		var respuesta = swig.renderFile('web/views/dashboard.dispensador.html', {
-			menu: "dispensador"
+		//Se almacenan pings en rangos de 10 minutos, por ello los minutos de cada
+		//fecha y hora son multiplos de 10
+		var minutos = parseInt(util.moment().minute()/10) * 10;
+		var momentUnixTimeHour = util.unixTimezoneParam(util.moment().startOf('hour'));
+		
+		//Datos de las ultimas 23 horas (23*60*60 = 82800s)
+		var unixTimeMax = momentUnixTimeHour + minutos * 60;
+		var unixTimeMin = momentUnixTimeHour - 82800;
+		//console.log(unixTimeMax);
+		//console.log(unixTimeMin);
+		
+		var criterio = { 
+			serial: req.session.usuario.serial,
+			unixtime: { $gte: unixTimeMin, $lte: unixTimeMax}
+		};
+		
+		var sumSec = 0;
+		function getDatoByUnixTime(dato){
+			return dato.unixtime === unixTimeMin + sumSec;
+		}
+		
+		
+		gestorBD.datos.obtenerDatos(criterio, function(datos) {
+			//Datos para la grafica "TIEMPO DE VIDA", "TEMPERATURA" y "HUMEDAD"
+			var dataTiempoVida = [];
+			var dataTempHume = [];
+			
+			for(var i = 0; i < 144; i++){
+				sumSec = 10 * 60 * i;
+				var dato = datos.find(getDatoByUnixTime);
+				var fechaMoment = util.moment((unixTimeMin + sumSec) * 1000).tz('GMT').locale('es');
+				
+				var count = 0;
+				var temp = null;
+				var hume = null;
+				if(dato !== undefined){
+					count = dato.pings;
+					temp = dato.temperatura;
+					hume = dato.humedad;
+				}
+				
+				//Minutos de la hora actual que aun no han llegado
+				if((unixTimeMin + sumSec) <= unixTimeMax){
+					dataTiempoVida.push({hora: fechaMoment.hours(), minuto: fechaMoment.minutes(), count: count});
+					dataTempHume.push({time: fechaMoment.format("DD/MM HH:mm"), temp: temp, hume: hume});
+				}
+				
+				//console.log({hora: fechaMoment.hours(), minuto: fechaMoment.minutes(), count: count})
+			}
+			
+			//Datos para paneles de informacion
+			var panelInfo = {};
+			
+			if(datos.length > 0){
+				var ultimoDato = datos[datos.length-1];
+				
+				panelInfo.temperatura = ultimoDato.temperatura;
+				panelInfo.humedad = ultimoDato.humedad;
+				panelInfo.icalor = ultimoDato.icalor;
+				panelInfo.gas = (ultimoDato.gas) ? "SI" : "NO";
+				panelInfo.caida = (ultimoDato.vibracion) ? "SI" : "NO";
+				
+				//El dispensador estará conectado si el ultimo ping ha sido 
+				//realizado hace menos de 60 segundos
+				var criterio = { serial: req.session.usuario.serial };
+				gestorBD.serials.obtenerSerials(criterio, function(serials) {
+					panelInfo.conexion = ((util.unixTimezoneNow() - serials[0].ultimoping) <= 60) ? "SI" : "NO";
+					
+					var respuesta = swig.renderFile('web/views/dashboard.dispensador.html', {
+						menu: "dispensador",
+						panelInfo: panelInfo,
+						dataTiempoVida: JSON.stringify(dataTiempoVida),
+						dataTempHume: JSON.stringify(dataTempHume)
+					});
+					
+					res.send(respuesta);
+				});
+			}else{
+				panelInfo.temperatura = 0;
+				panelInfo.humedad = 0;
+				panelInfo.icalor = 0;
+				panelInfo.gas = "NO";
+				panelInfo.caida = "NO";
+				panelInfo.conexion = "NO";
+			
+				var respuesta = swig.renderFile('web/views/dashboard.dispensador.html', {
+					menu: "dispensador",
+					panelInfo: panelInfo,
+					dataTiempoVida: JSON.stringify(dataTiempoVida),
+					dataTempHume: JSON.stringify(dataTempHume)
+				});
+				
+				res.send(respuesta);
+			}
 		});
-		res.send(respuesta);
 	});
 	
 	//DASHBOARD(PERFIL) - GET vista

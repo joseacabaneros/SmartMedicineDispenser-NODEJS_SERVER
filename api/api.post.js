@@ -45,7 +45,7 @@ module.exports = function(app, gestorBD) {
 		 * siendo 0 la posicion sin pastilla
 		 * y 1-12 las pastillas */
 		
-		var criterio = { "key" : req.body.serial };
+		var criterio = { serial : req.body.serial };
 		
 		gestorBD.serials.obtenerSerials(criterio, function(serial){
 			if (serial === null || serial.length === 0){

@@ -43,9 +43,9 @@ module.exports = function(app, swig, gestorBD) {
 			gestorBD.usuarios.obtenerUsuarios(criterio, function(usuarios) {
 				//Email no registrado - OK
 				if (usuarios === null || usuarios.length === 0) {
-					var criterio = { key: req.body.serial };
+					var criterio = { serial: req.body.serial };
 					
-					gestorBD.obtenerSerials(criterio, function(serials) {
+					gestorBD.serials.obtenerSerials(criterio, function(serials) {
 						//Serial no creado - WRONG
 						if (serials === null || serials.length === 0) {
 							req.session.error = {
@@ -69,7 +69,7 @@ module.exports = function(app, swig, gestorBD) {
 							if(serials[0].usuarios === 2){
 								req.session.error = {
 									mensaje: 'Error al registrar usuario. Número máximo de ' + 
-										'usuarios registrados con el serial \'' + serials[0].key + '\'',
+										'usuarios registrados con el serial \'' + serials[0].serial + '\'',
 									tipo: 'GENERAL'
 								};
 								res.redirect("/signup");
@@ -98,7 +98,7 @@ module.exports = function(app, swig, gestorBD) {
 									} else {
 										//Anadir un usuario mas como registrado con el serial
 										serials[0].usuarios++;
-										gestorBD.modificarSerial(criterio, serials[0], function(result) {
+										gestorBD.serials.modificarSerial(criterio, serials[0], function(result) {
 											if(result === null){
 												req.session.error = {
 													mensaje: 'Error al registrar usuario. Inténtelo de nuevo más tarde',

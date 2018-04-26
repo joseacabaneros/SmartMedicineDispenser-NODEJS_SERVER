@@ -13,7 +13,7 @@ module.exports = function(app, swig, gestorBD) {
 	
 	//ADMIN nuevo serial - POST procesar formulario
 	app.post('/admin', function(req, res) {
-		var criterio = { key: req.body.serial };
+		var criterio = { serial: req.body.serial };
 		
 		gestorBD.serials.obtenerSerials(criterio, function(serials) {
 			//Serial aun no creado - OK
@@ -24,7 +24,8 @@ module.exports = function(app, swig, gestorBD) {
 					posicion: {
 						A: 0, 
 						B: 0
-					}
+					},
+					ultimoping: 0
 				};
 				
 				gestorBD.serials.insertarSerial(serial, function(id) {
