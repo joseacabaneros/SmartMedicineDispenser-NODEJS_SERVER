@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title>{% block titulo %} SmartMedicineDispenser {% endblock %}</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="">
+  <meta name="author" content="Jose Antonio Cabaneros">
+  <link rel="icon" href="/favicon.ico">
+  <!-- CSS Style -->
+  <link rel="stylesheet" type="text/css" href="/css/external/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/css/internal/style.css">
+  <link rel="stylesheet" type="text/css" href="/css/internal/style.inicio.css">
+  {% block styles %} {% endblock %}
+  <!-- JavaScript -->
+  {% block scripts %} {% endblock %}
+</head>
+<body>
+  <!-- Contenido -->
+  <div class="contenedor">
+  {% block contenido_principal %}
+  <!-- Posible contenido por defecto -->
+  {% endblock %}
+  </div>
+</body>
+</html>

@@ -1,4 +1,16 @@
 $(document).ready(function(){
+	//Refrescar pagina cada 5 minutos
+	setInterval(function() {
+		window.location.reload();
+	}, 300000); 
+	
+	//Colores huecos pastillero
+	$('.past-pos-tomada').css("fill", "#FB3838");
+	$('.past-pos-programada').css("fill", "#58ACFA");
+	$('.past-pos-no-disponible').css("fill", "#1A5276");
+	$('.past-pos-libre').css("fill", "#00D113");
+	
+	//Boton de confimacion de 'Borrar'
 	$('[data-toggle=confirmation]').confirmation({
 	  rootSelector: '[data-toggle=confirmation]',
 	  btnOkLabel: "Sí",
@@ -15,8 +27,8 @@ $(document).ready(function(){
         allowInputToggle: true
     }).on('dp.change', function(e) {
     	if(e.date && e.date.isSame(moment(), 'd')){
-			//var min = moment().add(5, 'minute').startOf('minute');
-    		var min = moment().startOf('minute');
+			var min = moment().startOf('minute').add(2, 'minutes');
+    		//var min = moment().startOf('minute');
 			$('#input-time').data("DateTimePicker").minDate(min);
 		}else
 			$('#input-time').data("DateTimePicker").minDate(false);
@@ -25,11 +37,11 @@ $(document).ready(function(){
     $('#input-time').datetimepicker({
         locale: 'es',
         format: 'HH:mm',
-        minDate: moment().add(5, 'minute').startOf('minute'),
-        useCurrent: false,
+        minDate: moment().startOf('minute').add(2, 'minutes'),
         ignoreReadonly: true,
         allowInputToggle: true
     });
+    $('#input-time input').val("");
     
     //Repeticion y tomas (coordinacion)
     $('#input-tomas').change(function(){
@@ -41,8 +53,36 @@ $(document).ready(function(){
 		    }).prop('selected', true);
     	else if(tomas === 1)
     		$('#select-rep').val('0');
+    	
+    	changeResume();
+    });
+    
+    $('#select-rep, #input-pastillas').change(function() {
+    	changeResume();
     });
 });
+
+function changeResume(){
+	var rep = parseInt($('#select-rep option:selected').text());
+	var tomas = parseInt($('#input-tomas').val());
+	
+	if(rep > 0 && tomas > 0){
+		var pastillas = parseInt($('#input-pastillas').val()) * tomas;
+		
+		var seconds = parseInt(rep * tomas * 60 * 60, 10);
+		var days = Math.floor(seconds / (3600*24));
+		seconds  -= days*3600*24;
+		var hrs   = Math.floor(seconds / 3600);
+		seconds  -= hrs*3600;
+		
+		$('.resumeProgramacion').html("<span>Tratamiento de </span><b>" + days 
+				+ " días</b> y <b>" + hrs + " horas</b> | <b>" + pastillas + 
+				" pastillas</b>");
+		$('blockquote').show();
+	}else{
+		$('blockquote').hide()
+	}
+}
 
 function doProgressWidth(tomadas, programadas, libres) {
 	var tomadasWidth = Math.round(tomadas * 100 / 12);

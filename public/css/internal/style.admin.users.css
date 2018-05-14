@@ -1,0 +1,12 @@
+.pagina-interior{
+	overflow-y: auto;
+}
+
+/* Table horarios programados */
+.centro-item{
+	text-align: center;
+}
+
+.table > tbody > tr > td {
+     vertical-align: middle;
+}

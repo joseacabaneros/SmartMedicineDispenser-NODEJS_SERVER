@@ -7,6 +7,7 @@ module.exports = function(app, swig, gestorBD, util) {
 		var pastillero = req.params.pastillero; //A o B
 		
 		gestorBD.serials.obtenerSerials(criterio, function(serial){
+			
 			var criterio = {
 				serial: req.session.usuario.serial,
 				unixtime: { $gte: util.unixTimezoneNow() }
@@ -20,18 +21,18 @@ module.exports = function(app, swig, gestorBD, util) {
 				/*
 				 * Tomadas = posicion pastillero
 				 * Programadas = sum(pastillas horarios programados)
-				 * Libres = 12 - Programadas - Tomadas
+				 * Libres = Tratamiento - Programadas - Tomadas
 				 */
 				
 				var estadoA = {
-					tomadas: serial[0].posicion['A'],
+					tomadas: serial[0].posicion.A,
 					programadas: 0,
-					libres: 12 - serial[0].posicion['A']
+					libres: serial[0].tratamiento.A.pastillas - serial[0].posicion.A
 				};
 				var estadoB = {
-					tomadas: serial[0].posicion['B'],
+					tomadas: serial[0].posicion.B,
 					programadas: 0,
-					libres: 12 - serial[0].posicion['B']	
+					libres: serial[0].tratamiento.B.pastillas - serial[0].posicion.B	
 				};
 				
 				//Obtener horarios y resumen de cada pastillero
@@ -85,6 +86,12 @@ module.exports = function(app, swig, gestorBD, util) {
 						clasesSvg[cont] = "past-pos-libre";
 						cont++;
 					}
+					//Pastillas no disponibles (por tratamiento)
+					var quedan = cont;
+					for(i = 0 ; i < (12-quedan); i++){
+						clasesSvg[cont] = "past-pos-no-disponible";
+						cont++;
+					}
 					
 					return clasesSvg;
 				}
@@ -119,6 +126,7 @@ module.exports = function(app, swig, gestorBD, util) {
 					error: req.session.error,
 					datos: req.session.datos,
 					pastillero: pastillero,
+					tratamiento: serial[0].tratamiento[pastillero],
 					horarios: horariosForDate,
 					clasessvg: clasesSvg,
 					estadoPasSelect: estadoPasSelect,
@@ -144,13 +152,12 @@ module.exports = function(app, swig, gestorBD, util) {
 					mensaje: ' Inténtelo de nuevo más tarde',
 					tipo: 'PROGRAMACION'
 				};
-			} else {
-				//Redirecionar flujo al pastillero programado
-				if(req.params.pastillero === 'A'){
-					res.redirect("/dashboard/pillbox/A");
-				}else{
-					res.redirect("/dashboard/pillbox/B");
-				}
+			} 
+			//Redirecionar flujo al pastillero programado
+			if(req.params.pastillero === 'A'){
+				res.redirect("/dashboard/pillbox/A");
+			}else{
+				res.redirect("/dashboard/pillbox/B");
 			}
 		});
 	});
@@ -257,17 +264,49 @@ module.exports = function(app, swig, gestorBD, util) {
 	//DASHBOARD(PERFIL) - GET vista
 	app.get("/dashboard/profile", function(req, res) {
 		var respuesta = swig.renderFile('web/views/dashboard.perfil.html', {
-			menu: "perfil"
+			menu: "perfil",
+			datosUsuario: req.session.usuario,
+			error: req.session.error,
+			success: req.session.success
 		});
+		
+		//Borrar futuras peticiones
+		delete req.session.error;
+		delete req.session.success;
+		
 		res.send(respuesta);
 	});
 	
 	//DASHBOARD(AJUSTES) - GET vista
 	app.get("/dashboard/settings", function(req, res) {
-		var respuesta = swig.renderFile('web/views/dashboard.ajustes.html', {
-			menu: "ajustes"
+		var criterio = { serial: req.session.usuario.serial};
+		
+		//Obtener emails de usuarios registrados para el serial del usuario
+		//iniciado en sesion
+		gestorBD.usuarios.obtenerUsuarios(criterio, function(usuarios) {
+			var emailsUsuarios = [];
+			
+			usuarios.forEach(function(usuario) {
+				emailsUsuarios.push(usuario.email);
+			});
+			
+			//Obtener emails y ajustes del dispensador
+			gestorBD.serials.obtenerSerials(criterio, function(serials) {
+				var respuesta = swig.renderFile('web/views/dashboard.ajustes.html', {
+					menu: "ajustes",
+					error: req.session.error,
+					success: req.session.success,
+					emailsNotUsuarios: emailsUsuarios,
+					serialConfig: serials[0]
+				});
+				
+				//Borrar futuras peticiones
+				delete req.session.error;
+				delete req.session.success;
+				
+				res.send(respuesta);
+			});
 		});
-		res.send(respuesta);
 	});
 	
 	//DASHBOARD(PASTILLEROS/HORARIOS) - POST programacion horarios
@@ -317,135 +356,500 @@ module.exports = function(app, swig, gestorBD, util) {
 			//Calculo del UNIXtime de programacion del horario
 			var parts = formHorario.date.split('/');
 			var dateISOstring = parts[2] + "-" + parts[1] + "-" + parts[0] + "T" + formHorario.time + ":00"; 
-			console.log(dateISOstring);
+			//console.log(dateISOstring);
 			var unixTimestamp = Math.round(new Date(dateISOstring).getTime()/1000);
-			console.log(unixTimestamp);
+			//console.log(unixTimestamp);
 			
-			//Comprobar si la/s programacion/es distan 15min de otros horarios ya programados
-			var unixTimestampMin =  unixTimestamp - 900;
-			var criterio = {
-				serial: usuarioSession.serial,
-				unixtime: { $gte: unixTimestampMin }
-			};
-	
-			gestorBD.horarios.obtenerProgramacion(criterio, function(horarios){
-				var pastilleroRedirect = pastilleros[0];
-				
-				var sumUnixTime;
-				var pastilleroAux;
-				function filterHorarios(horario){
-					return (horario.unixtime > (sumUnixTime - 900)) &&
-					   	   (horario.unixtime < (sumUnixTime + 900));
-				}
-				function mismoPastilleroFilterHorarios(horario){
-					return (horario.pastillero === pastilleroAux) &&
-						   (horario.unixtime === sumUnixTime);
-				}
-				function distintoPastilleroHorarios(horario){
-					return (horario.pastillero !== pastilleroAux) &&
-						   (horario.unixtime === sumUnixTime);
-				}
-				
-				//No conexion a Mongo
-				if(horarios === null){
-					req.session.error = {
-						mensaje: ' Inténtelo de nuevo más tarde',
-						tipo: 'PROGRAMACION'
-					};
-				//Si conexion a Mongo
-				}else{
-					pastilleros.forEach(function(pastillero) {
-						for(var i = 0; i < formHorario.tomas; i++){
-							sumUnixTime = (i * formHorario.rep * 3600) + unixTimestamp;
-							pastilleroAux = pastillero;
-							
-							var horariosConflicto = horarios.filter(filterHorarios);
-							
-							//Situacion especial: permitir programar un horario en el pastillero
-							//"contrario" para la misma fecha y hora (misma programacion que 
-							//programar ambos pastilleros a la vez)
-							var conflictos;
-							var mismoPastillero = horariosConflicto.filter(mismoPastilleroFilterHorarios);
-							var distintoPastillero = horariosConflicto.filter(distintoPastilleroHorarios);
-							
-							//Conflicto: mismo pastillero y mismo horario
-							if(mismoPastillero.length > 0){ 
-								conflictos = mismoPastillero;
-							//NO Conflicto: distinto pastillero y mismo horario
-							}else if(distintoPastillero.length > 0){
-								conflictos = [];
-							//Conflicto: resto
-							}else{
-								conflictos = horariosConflicto;
-							}
-							
-							//Si existe algun horario que diste menos de 15 minutos del que se va
-							//a programar: error
-							if (conflictos.length > 0){
-								//Redireccionar flujo al pastillero en conflicto para la programacion
-								pastilleroRedirect = conflictos[0].pastillero;
-								
-								var conflicto = {
-									pastillero: conflictos[0].pastillero,
-									fecha: util.moment(conflictos[0].unixtime * 1000).tz('GMT')
-										.locale('es').format("dddd DD MMMM YYYY"),
-									hora: util.moment(conflictos[0].unixtime * 1000).tz('GMT')
-										.locale('es').format("HH:mm")
-								};
-								
-								req.session.error = {
-									mensaje: ' la programación introducida ' + 
-										'se superpone con otros horarios. Recuerde que cada horario ' + 
-										'programado debe distrar al menos 15 minutos de otros',
-									extra: ' Pastillero \'' + conflicto.pastillero + 
-										 '\' y horario \'' + conflicto.fecha + ' ' + conflicto.hora + 
-										 '\'',
-									tipo: 'PROGRAMACION'
-								};
-								
-								req.session.datos = formHorario;
-							}
-						}
-					});
-				}
-				
-				function noInsert(id) {
-					if (id === null){
+			//Obtener tiempoEspera entre tomas (será la diferencia de tiempo que debe de haber entre horarios)
+			gestorBD.serials.obtenerSerials({serial : usuarioSession.serial}, function(serials){
+				//TIEMPO ESPERA + 50SEG = SEGUNDOS QUE DEBEN DISTAR LAS PROGRAMACIONES
+				var segEspera = (serials[0].toma.tiempoespera * 60) + 50;
+			
+				//Comprobar si la/s programacion/es distan 'TIEMPO ESPERA + 50SEG' de otros horarios ya programados
+				var unixTimestampMin =  unixTimestamp - segEspera;
+				var criterio = {
+					serial: usuarioSession.serial,
+					unixtime: { $gte: unixTimestampMin }
+				};
+		
+				gestorBD.horarios.obtenerProgramacion(criterio, function(horarios){
+					var pastilleroRedirect = pastilleros[0];
+					
+					var sumUnixTime;
+					var pastilleroAux;
+					function filterHorarios(horario){
+						return (horario.unixtime > (sumUnixTime - segEspera)) &&
+						   	   (horario.unixtime < (sumUnixTime + segEspera));
+					}
+					function mismoPastilleroFilterHorarios(horario){
+						return (horario.pastillero === pastilleroAux) &&
+							   (horario.unixtime === sumUnixTime);
+					}
+					function distintoPastilleroHorarios(horario){
+						return (horario.pastillero !== pastilleroAux) &&
+							   (horario.unixtime === sumUnixTime);
+					}
+					
+					//No conexion a Mongo
+					if(horarios === null){
 						req.session.error = {
 							mensaje: ' Inténtelo de nuevo más tarde',
 							tipo: 'PROGRAMACION'
 						};
+					//Si conexion a Mongo
+					}else{
+						pastilleros.forEach(function(pastillero) {
+							for(var i = 0; i < formHorario.tomas; i++){
+								sumUnixTime = (i * formHorario.rep * 3600) + unixTimestamp;
+								pastilleroAux = pastillero;
+								
+								var horariosConflicto = horarios.filter(filterHorarios);
+								
+								//Situacion especial: permitir programar un horario en el pastillero
+								//"contrario" para la misma fecha y hora (misma programacion que 
+								//programar ambos pastilleros a la vez)
+								var conflictos;
+								var mismoPastillero = horariosConflicto.filter(mismoPastilleroFilterHorarios);
+								var distintoPastillero = horariosConflicto.filter(distintoPastilleroHorarios);
+								
+								//Conflicto: mismo pastillero y mismo horario
+								if(mismoPastillero.length > 0){ 
+									conflictos = mismoPastillero;
+								//NO Conflicto: distinto pastillero y mismo horario
+								}else if(distintoPastillero.length > 0){
+									conflictos = [];
+								//Conflicto: resto
+								}else{
+									conflictos = horariosConflicto;
+								}
+								
+								//Si existe algun horario que diste menos de 15 minutos del que se va
+								//a programar: error
+								if (conflictos.length > 0){
+									//Redireccionar flujo al pastillero en conflicto para la programacion
+									pastilleroRedirect = conflictos[0].pastillero;
+									
+									var conflicto = {
+										pastillero: conflictos[0].pastillero,
+										fecha: util.moment(conflictos[0].unixtime * 1000).tz('GMT')
+											.locale('es').format("dddd DD MMMM YYYY"),
+										hora: util.moment(conflictos[0].unixtime * 1000).tz('GMT')
+											.locale('es').format("HH:mm")
+									};
+									
+									req.session.error = {
+										mensaje: " la programación introducida " + 
+											"se superpone con otros horarios. Recuerde que cada horario " + 
+											"programado debe distar al menos 'TIEMPO de ESPERA + 50SEG = " + 
+											serials[0].toma.tiempoespera + "MIN + 50SEG' de otros.",
+										extra: " Pastillero '" + conflicto.pastillero + 
+											 "' y horario '" + conflicto.fecha + " " + conflicto.hora + 
+											 "'",
+										tipo: 'PROGRAMACION'
+									};
+									
+									req.session.datos = formHorario;
+								}
+							}
+						});
 					}
-				}
-				
-				//Intertar programacion/es (si req.session.error es undefined (no ha habido 
-				//conflicto de horarios), la programacion/es pueden realizarse)
-				if(req.session.error === undefined){
-					pastilleros.forEach(function(pastillero) {
-						for(var i = 0; i < formHorario.tomas; i++){
-							var sumUnixTime = (i * formHorario.rep * 3600) + unixTimestamp;
-							
-							var horario = {
-								serial: usuarioSession.serial,
-								unixtime: sumUnixTime,
-								pastillero: pastillero,
-								pastillas: formHorario.pastillas,
-								tomadaBtn: false,
-								tomadaIR: false
+					
+					function noInsert(id) {
+						if (id === null){
+							req.session.error = {
+								mensaje: ' Inténtelo de nuevo más tarde',
+								tipo: 'PROGRAMACION'
+							};
+						}
+					}
+					
+					//Intertar programacion/es (si req.session.error es undefined (no ha habido 
+					//conflicto de horarios), la programacion/es pueden realizarse)
+					if(req.session.error === undefined){
+						pastilleros.forEach(function(pastillero) {
+							for(var i = 0; i < formHorario.tomas; i++){
+								var sumUnixTime = (i * formHorario.rep * 3600) + unixTimestamp;
+								
+								var horario = {
+									serial: usuarioSession.serial,
+									unixtime: sumUnixTime,
+									pastillero: pastillero,
+									pastillas: formHorario.pastillas,
+									tomadaBtn: false,
+									tomadaIR: false
+								};
+								
+								gestorBD.horarios.insertarProgramacion(horario, noInsert);
+							}
+						});
+						
+						//Esperar 1 segundo a insertar las programaciones de horarios (asincrono)
+						setTimeout(function(){
+							//Redirecionar flujo al pastillero programado
+							if(pastilleroRedirect === 'A'){
+								res.redirect("/dashboard/pillbox/A");
+							}else{
+								res.redirect("/dashboard/pillbox/B");
+							}
+						}, 1000);
+					}else{
+						//Redirecionar flujo al pastillero programado
+						if(pastilleroRedirect === 'A'){
+							res.redirect("/dashboard/pillbox/A");
+						}else{
+							res.redirect("/dashboard/pillbox/B");
+						}
+					}
+				});
+			});
+		}
+	});
+	
+	//DASHBOARD(PERFIL) - POST datos personales de usuario
+	//ADMIN(PERFIL) - POST datos personales de admin
+	app.post('/profile', function (req, res) {
+		var pass1 = req.body.pass1;
+		var pass2 = req.body.pass2;
+		
+		//Comprobar contraseñas iguales
+		if(pass1 !== "" && pass2 !== "" && pass1 !== pass2){
+			req.session.error = {
+				mensaje: 'Las contraseñas introducidas no coinciden',
+				tipo: 'PASSWORD'
+			};
+			
+			//USUARIO
+			if(req.session.usuario.tipo === 'USUARIO'){
+				res.redirect('/dashboard/profile');
+			//ADMIN
+			}else if(req.session.usuario.tipo === 'ADMIN'){
+				res.redirect('/admin/profile');
+			}
+		}else{
+			//Comprobar que el email no esté ya registrado
+			var criterio = { email: req.body.email };
+			
+			gestorBD.usuarios.obtenerUsuarios(criterio, function(usuarios) {
+				//Email no registrado o el mismo - OK
+				if (usuarios === null || usuarios.length === 0 || req.body.email === req.session.usuario.email) {
+					var criterio = { "_id" : gestorBD.mongo.ObjectID(req.session.usuario._id) };
+					
+					var usuario = {
+						nombre: req.body.nombre,
+						apellido: req.body.apellido,
+						telefono: req.body.tlfn,
+						email: req.body.email
+					};
+					
+					//Modificar password si ha sido introducida una nueva
+					if(pass1 !== ""){
+						usuario.password = app.get("crypto").createHmac('sha256', app.get('clave'))
+		    				.update(pass1).digest('hex');
+					}
+					
+					gestorBD.usuarios.modificarUsuario(criterio, usuario, function(result) {
+						if (result === null){
+							req.session.error = {
+								mensaje: 'Error al modificar datos personales. Inténtelo de nuevo más tarde',
+								tipo: 'GENERAL'
 							};
 							
-							gestorBD.horarios.insertarProgramacion(horario, noInsert);
+							//USUARIO
+							if(req.session.usuario.tipo === 'USUARIO'){
+								res.redirect('/dashboard/profile');
+							//ADMIN
+							}else if(req.session.usuario.tipo === 'ADMIN'){
+								res.redirect('/admin/profile');
+							}
+						} else {
+							var criterio = { "_id" : gestorBD.mongo.ObjectID(req.session.usuario._id) };
+							
+							//Actualizar datos personales del usuario uniciado en sesion
+							gestorBD.usuarios.obtenerUsuarios(criterio, function(usuarios) {
+								req.session.usuario = usuarios[0];
+								req.session.success = 'Datos personales modificados con éxito';
+								
+								//USUARIO
+								if(req.session.usuario.tipo === 'USUARIO'){
+									res.redirect('/dashboard/profile');
+								//ADMIN
+								}else if(req.session.usuario.tipo === 'ADMIN'){
+									res.redirect('/admin/profile');
+								}
+							});
 						}
 					});
-				}
-				
-				//Redirecionar flujo al pastillero programado
-				if(pastilleroRedirect === 'A'){
-					res.redirect("/dashboard/pillbox/A");
-				}else{
-					res.redirect("/dashboard/pillbox/B");
+					
+				//Email ya registrado - WRONG
+				} else {
+					req.session.error = {
+						mensaje: 'La dirección de correo electrónico \'' + req.body.email + 
+							'\' ya ha sido registrada',
+						tipo: 'EMAIL'
+					};
+					
+					res.redirect('/dashboard/profile');
 				}
 			});
 		}
+	});
+	
+	//DASHBOARD(AJUSTES/EMAILS) - POST emails de notificacion
+	app.post("/dashboard/settings/emails", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		var serial = { emailsnotificacion: [req.body.email1, req.body.email2] };
+		
+		gestorBD.serials.modificarSerial(criterio, serial, function(result) {
+			if(result === null){
+				req.session.error = {
+					mensaje: 'Error al modificar emails de notificación. Inténtelo de nuevo más tarde',
+					tipo: 'GENERAL'
+				};
+				
+				res.redirect('/dashboard/settings');
+			}else{
+				req.session.success = 'Emails de notificación modificados con éxito';
+				
+				res.redirect('/dashboard/settings');
+			}
+		});
+	});
+	
+	//DASHBOARD(AJUSTES/TRATAMIENTO) - POST medicamento y numero de pastillas del tratamiento
+	app.post("/dashboard/settings/treatment", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		var serial = { 
+			tratamiento: {
+				A: {
+					medicamento: req.body.tratamientoAMedicamento,
+					pastillas: parseInt(req.body.tratamientoAPastillas)
+				},
+				B: {
+					medicamento: req.body.tratamientoBMedicamento,
+					pastillas: parseInt(req.body.tratamientoBPastillas)
+				}
+			} 
+		};
+		
+		gestorBD.serials.obtenerSerials(criterio, function(serialGet){
+			//Conocer si el numero de pastillas del tratamiento de cada uno de los pastillero quiere
+			//modificarse
+			var tratamientoAMod = (serial.tratamiento.A.pastillas !== serialGet[0].tratamiento.A.pastillas);
+			var tratamientoBMod = (serial.tratamiento.B.pastillas !== serialGet[0].tratamiento.B.pastillas);
+			
+			var criterio = {
+				serial: req.session.usuario.serial,
+				unixtime: { $gte: util.unixTimezoneNow() }
+			};
+			
+			//Obtener siguientes horarios programados, de todos los pastilleros
+			gestorBD.horarios.obtenerProgramacion(criterio, function(horarios){
+				var programadasA = false;
+				var programadasB = false;
+				
+				horarios.forEach(function(horario){
+					if(horario.pastillero === 'A'){
+						programadasA = true;
+					}else if(horario.pastillero === 'B'){
+						programadasB = true;
+					}
+				});
+				
+				//Error si quiere modificarse el numero de pastillas del tratamiento de un pastillero
+				//y este ya ha comenzado o dispone de horarios ya programados
+				if((tratamientoAMod && (programadasA || serialGet[0].posicion.A !== 0)) ||
+						(tratamientoBMod && (programadasB || serialGet[0].posicion.B !== 0))){
+					req.session.error = {
+						mensaje: 'No puede modificarse el número de pastillas del tratamiento de ' +
+							'un pastillero si ya ha comenzado el tratamiento o dispone de horarios programados',
+						tipo: 'TRATAMIENTO'
+					};
+					
+					res.redirect('/dashboard/settings');
+				}else{
+					var criterio = { serial: req.session.usuario.serial};
+					
+					gestorBD.serials.modificarSerial(criterio, serial, function(result) {
+						if(result === null){
+							req.session.error = {
+								mensaje: 'Error al modificar tratamiento. Inténtelo de nuevo más tarde',
+								tipo: 'GENERAL'
+							};
+							
+							res.redirect('/dashboard/settings');
+						}else{
+							req.session.success = 'Tratamiento modificado con éxito';
+							
+							res.redirect('/dashboard/settings');
+						}
+					});
+				}
+			});
+		});
+	});
+	
+	//DASHBOARD(AJUSTES/TOMA) - POST tiempo de espera, sensor de deteccion y btn confirmacion
+	app.post("/dashboard/settings/take", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		var serial = { 
+			toma: {
+				tiempoespera: parseInt(req.body.tiempoEspera),
+				irdeteccion: (req.body.deteccion === 'si'),
+				btnconfirmacion: (req.body.btnConfirmacion === 'si')
+			} 
+		};
+		
+		gestorBD.serials.obtenerSerials(criterio, function(serialGet){
+			//Conocer si el tiempo de espera requiere modificarse
+			var tiempoEsperaMod = (serial.toma.tiempoespera !== serialGet[0].toma.tiempoespera);
+			
+			var criterio = {
+				serial: req.session.usuario.serial,
+				unixtime: { $gte: util.unixTimezoneNow() }
+			};
+			
+			//Obtener siguientes horarios programados, de todos los pastilleros
+			gestorBD.horarios.obtenerProgramacion(criterio, function(horarios){
+				//ERROR: Dispone de horarios programados (alguno o ambos pastilleros) y 
+				//requiere de modificacion del tiempo de espera de toma de medicacion
+				if(tiempoEsperaMod && horarios.length > 0){
+					req.session.error = {
+						mensaje: 'No puede modificarse el tiempo de espera de toma de medicación ' +
+							'si se dispone de horarios programados',
+						tipo: 'TOMA'
+					};
+					
+					res.redirect('/dashboard/settings');
+				//OK: No dispone de horarios programados o no se requiere modificar el tiempo de espera
+				}else{
+					var criterio = { serial: req.session.usuario.serial};
+					
+					gestorBD.serials.modificarSerial(criterio, serial, function(result) {
+						if(result === null){
+							req.session.error = {
+								mensaje: 'Error al modificar ajustes de toma de medicación. Inténtelo de nuevo más tarde',
+								tipo: 'GENERAL'
+							};
+							
+							res.redirect('/dashboard/settings');
+						}else{
+							req.session.success = 'Ajustes de toma de medicación modificados con éxito';
+							
+							res.redirect('/dashboard/settings');
+						}
+					});
+				}
+			});
+		});
+	});
+	
+	//DASHBOARD(AJUSTES/DISPENSADOR) - POST led notificacion y zumbador
+	app.post("/dashboard/settings/dispenser", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		var serial = { 
+			dispensador: {
+				lednotificacion: (req.body.ledNotificacion === 'si'),
+				sonidonotificacion: {
+					estado: (req.body.sonidoNotificacionEstado === 'si')
+				}
+			} 
+		};
+		
+		//Almacenar tiempo si se ha elegido sonido de notificacion, null en caso contrario
+		if(serial.dispensador.sonidonotificacion.estado){
+			serial.dispensador.sonidonotificacion.valor = parseInt(req.body.sonidoNotificacionValor);
+		}else{
+			serial.dispensador.sonidonotificacion.valor = null;
+		}
+		
+		gestorBD.serials.modificarSerial(criterio, serial, function(result) {
+			if(result === null){
+				req.session.error = {
+					mensaje: 'Error al modificar ajustes del dispensador. Inténtelo de nuevo más tarde',
+					tipo: 'GENERAL'
+				};
+				
+				res.redirect('/dashboard/settings');
+			}else{
+				req.session.success = 'Ajustes del dispensador modificados con éxito';
+				
+				res.redirect('/dashboard/settings');
+			}
+		});
+	});
+	
+	//DASHBOARD(AJUSTES/NOTIFICACIONES) - POST sin conexion, quedan pocas, temperatura, humedad, gas y caida
+	app.post("/dashboard/settings/notifications", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		var serial = { 
+			configuracionnotificaciones: {
+				sinconexion: {
+					estado: (req.body.sinConexionEstado === 'si')
+				},
+				pocaspastillas: {
+					estado: (req.body.pocasPastillasEstado === 'si')
+				},
+				temperatura: {
+					estado: (req.body.temperaturaEstado === 'si')
+				},
+				humedad: {
+					estado: (req.body.humedadEstado === 'si')
+				},
+				detecciongas: (req.body.deteccionGas === 'si'),
+				deteccioncaida: (req.body.deteccionCaida === 'si')
+			} 
+		};
+		
+		//Almacenar tiempo si se ha elegido notificacion "sin conexion", null en caso contrario
+		if(serial.configuracionnotificaciones.sinconexion.estado){
+			serial.configuracionnotificaciones.sinconexion.valor = parseInt(req.body.sinConexionValor);
+		}else{
+			serial.configuracionnotificaciones.sinconexion.valor = null;
+		}
+		
+		//Almacenar pastillas si se ha elegido notificacion "pocas pastillas", null en caso contrario
+		if(serial.configuracionnotificaciones.pocaspastillas.estado){
+			serial.configuracionnotificaciones.pocaspastillas.valor = parseInt(req.body.pocasPastillasValor);
+		}else{
+			serial.configuracionnotificaciones.pocaspastillas.valor = null;
+		}
+		
+		//Almacenar temperatura max y min si se ha elegido notificacion "temperatura", null en caso contrario
+		if(serial.configuracionnotificaciones.temperatura.estado){
+			serial.configuracionnotificaciones.temperatura.min = parseInt(req.body.temperaturaMin);
+			serial.configuracionnotificaciones.temperatura.max = parseInt(req.body.temperaturaMax);
+		}else{
+			serial.configuracionnotificaciones.temperatura.min = null;
+			serial.configuracionnotificaciones.temperatura.max = null;
+		}
+		
+		//Almacenar humedad max y min si se ha elegido notificacion "humedad", null en caso contrario
+		if(serial.configuracionnotificaciones.humedad.estado){
+			serial.configuracionnotificaciones.humedad.min = parseInt(req.body.humedadMin);
+			serial.configuracionnotificaciones.humedad.max = parseInt(req.body.humedadMax);
+		}else{
+			serial.configuracionnotificaciones.humedad.min = null;
+			serial.configuracionnotificaciones.humedad.max = null;
+		}
+		
+		gestorBD.serials.modificarSerial(criterio, serial, function(result) {
+			if(result === null){
+				req.session.error = {
+					mensaje: 'Error al modificar ajustes de notificaciones. Inténtelo de nuevo más tarde',
+					tipo: 'GENERAL'
+				};
+				
+				res.redirect('/dashboard/settings');
+			}else{
+				req.session.success = 'Ajustes de notificaciones modificados con éxito';
+				
+				res.redirect('/dashboard/settings');
+			}
+		});
 	});
 };

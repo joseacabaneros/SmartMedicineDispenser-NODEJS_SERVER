@@ -1,0 +1,20 @@
+.panelInicio .text-center{
+	margin-top: 65px;
+}
+
+.form-group span{
+    background-color: #FFFFFF;
+}
+
+.form-group .input-group input{
+	height: 45px;
+	font-size: 16px;
+	border-left: 0;
+}
+
+/* Para pantallas < 768px */
+@media only screen and (max-width: 768px){
+	.form-group .input-group input{
+		font-size: 14px;
+	}
+}

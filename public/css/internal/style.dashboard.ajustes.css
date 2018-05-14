@@ -1,0 +1,53 @@
+.pagina-interior{
+	overflow-y: auto;
+}
+
+h3{
+	margin-bottom: 20px;
+	padding-bottom: 5px;
+	
+	border-bottom: 1px solid #EEEEEE;
+}
+
+.box{
+	border-bottom: 2px solid #EEEEEE;
+}
+
+.borde{
+	border-left: 1px solid #EEEEEE;
+}
+
+.alert{
+	margin-top: 20px;
+}
+
+.margenBottom{
+	margin-bottom: 5px;
+}
+
+.margenRight{
+	margin-right: 5px;
+}
+
+.margenTop{
+	margin-top: 10px;
+}
+
+.padding-none{
+	padding: 0;
+}
+
+.padding-right-none{
+	padding-right: 0;
+}
+
+.telegramlink{
+	padding-top: 7px;
+}
+
+/* Para pantallas < 992px */
+@media only screen and (max-width: 992px){
+	.borde{
+		border: none;
+	}
+}

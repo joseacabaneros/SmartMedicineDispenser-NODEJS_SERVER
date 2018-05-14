@@ -1,0 +1,16 @@
+button{
+	height: 39px;
+	
+	background-color: #1AB188 !important;
+    border-color: #527D5A !important;
+    
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+button:hover{
+    border-radius: 20px !important;
+    background-color: rgba(26, 177, 136, 0.8) !important;
+}

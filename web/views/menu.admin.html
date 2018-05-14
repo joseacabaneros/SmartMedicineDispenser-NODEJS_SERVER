@@ -1,0 +1,42 @@
+<ul class="menu-interior">
+  <li id="menu-inicio">
+    <a aria-label="SMD inicio" role="menuitem" href="/">
+      <img src="/img/icon.svg" alt="Smart Medicine Dispenser" />
+    </a>
+  </li>
+  <li>
+    <a aria-label="Serials" role="menuitem" href="/admin/serials"
+      {% if menu == 'serials' %} id="item-select" {% endif %}>
+      <span class="icono">
+        <i class="fas fa-key fa-2x"></i>
+      </span>
+      <span class="texto">Serials</span>
+    </a>
+  </li>
+  <li>
+    <a aria-label="Usuarios" role="menuitem" href="/admin/users"
+      {% if menu == 'usuarios' %} id="item-select" {% endif %}>
+      <span class="icono">
+        <i class="fas fa-users fa-2x"></i>
+      </span>
+      <span class="texto">Usuarios</span>
+    </a>
+  </li>
+  <li>
+    <a aria-label="Perfil" role="menuitem" href="/admin/profile"
+      {% if menu == 'perfil' %} id="item-select" {% endif %}>
+      <span class="icono">
+        <i class="far fa-user fa-2x"></i>
+      </span>
+      <span class="texto">Perfil</span>
+    </a>
+  </li>
+  <li id="menu-cerrar-sesion">
+    <a aria-label="Cerrar sesión" role="menuitem" href="/logout">
+      <span class="icono">
+        <i class="fas fa-sign-out-alt fa-2x"></i>
+      </span>
+      <span class="texto">Logout</span>
+    </a>
+  </li>
+</ul>

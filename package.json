@@ -1,8 +1,8 @@
 {
   "name": "SmartMedicineDispenser",
-  "version": "0.1.0",
-  "description": "MedicineBox",
-  "main": "hello-world-server.js",
+  "version": "1.0.0",
+  "description": "SmartMedicineDispenser",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
   },
@@ -12,7 +12,7 @@
     "eclipse",
     "nodeclipse"
   ],
-  "author": "",
+  "author": "Jose Antonio Cabaneros",
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
@@ -22,7 +22,10 @@
     "moment": "^2.21.0",
     "moment-timezone": "^0.5.14",
     "mongodb": "^2.2.33",
+    "node-telegram-bot-api": "^0.30.0",
+    "nodemailer": "^4.6.4",
     "request": "^2.83.0",
+    "serve-favicon": "^2.5.0",
     "swig": "^1.4.2"
   }
 }

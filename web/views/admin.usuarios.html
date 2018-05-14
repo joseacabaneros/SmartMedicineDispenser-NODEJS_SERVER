@@ -1,0 +1,67 @@
+{% extends "base.dashboard.html" %} 
+
+{% block titulo %} Usuarios {% endblock %} 
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="/css/internal/style.admin.users.css">
+{% endblock %} 
+
+{% block scripts %}
+<script src="/js/external/bootstrap-confirmation.min.js" type="text/javascript"></script>
+<script src="/js/internal/script.admin.users.js" type="text/javascript"></script>
+{% endblock %} 
+
+{% block menu %}
+  {% include "menu.admin.html" %}
+{% endblock %}
+
+{% block contenido_principal %}
+<div class="pagina-interior">
+  <div class="col-sm-12">
+    <h3>Usuarios Registrados</h3>
+    <hr/>
+    {% if successDelete %}
+    <div class="alert alert-success" role="alert">
+      <i class="far fa-check-circle"></i> {{ successDelete }}
+    </div>
+    {% endif %}
+    {% if error.tipo == 'GENERAL' %}
+    <div class="alert alert-danger" role="alert">
+      <i class="far fa-times-circle"></i> {{ error.mensaje }}
+    </div>
+    {% endif %}
+    {% if usuarios == null || usuarios.length == 0 %}
+      <h4>Ningún usuario registrado</h4>
+    {% else %}
+      <table class="table table-border table-striped ">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Serial</th>
+            <th class="centro-item">Borrar</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for usuario in usuarios %}
+          <tr>
+            <td>{{ usuario.email }}</td>
+            <td>{{ usuario.serial }}</td>
+            <td class="centro-item">
+                {% if usuario.tipo == 'USUARIO' %}
+                  <a href="/admin/user/delete/{{ usuario.email }}/{{ usuario.serial }}""
+                    type="button" class="btn btn-danger btn-xs" 
+                    data-toggle="confirmation" data-title="¿Está seguro?">
+                    <i class="far fa-trash-alt"></i> Borrar
+                  </a>
+                {% elseif usuario.tipo == 'ADMIN' %}
+                  -
+                {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

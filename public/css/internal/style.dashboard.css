@@ -46,7 +46,12 @@ body{
     list-style: none;
 }
 
+#menu-inicio img{
+	width: 60px;
+}
+
 #menu-inicio{
+    background-color: rgba(26,177,136,0.25);
 	margin-bottom: 20px;
 }
 

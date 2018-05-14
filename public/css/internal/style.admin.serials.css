@@ -1,0 +1,40 @@
+.pagina-interior{
+	overflow-y: auto;
+}
+
+.inTextoPeq{
+	font-size: 85%;
+	font-style: oblique;
+	color: graytext;
+}
+
+.margenTop{
+	margin-top: 60px;
+}
+
+.box{
+	margin-top: 10px;
+    overflow: hidden;
+    
+    border-radius: 4px;
+    border: 2px solid #FFFFFF;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Table horarios programados */
+.centro-item{
+	text-align: center;
+}
+
+.table > tbody > tr > td {
+     vertical-align: middle;
+}
+
+/* Para pantallas < 700px */
+@media only screen and (max-width: 700px){
+	.box{
+		margin-top: 0;
+	}
+}

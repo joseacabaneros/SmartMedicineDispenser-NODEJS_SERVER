@@ -3,17 +3,94 @@
 {% block titulo %} Perfil {% endblock %} 
 
 {% block styles %}
+<link rel="stylesheet" type="text/css" href="/css/internal/style.dashboard.perfil.css">
 {% endblock %} 
 
 {% block scripts %}
+<script src="/js/internal/script.dashboard.perfil.js" type="text/javascript"></script>
 {% endblock %} 
 
+{% block menu %}
+  {% if datosUsuario.tipo == 'USUARIO' %}
+    {% include "menu.usuario.html" %}
+  {% elseif datosUsuario.tipo == 'ADMIN' %}
+    {% include "menu.admin.html" %}
+  {% endif %}
+{% endblock %}
+
 {% block contenido_principal %}
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Perfil</h1>
+<div class="pagina-interior">
+  <div class="container-fluid col-sm-6 col-sm-offset-3">
+    <h3>Datos Personales</h3>
+    <hr/>
+    {% if success %}
+    <div class="alert alert-success" role="alert">
+      <i class="far fa-check-circle"></i> {{ success }}
     </div>
+    {% endif %}
+    {% if error.tipo == 'GENERAL' %}
+    <div class="alert alert-danger" role="alert">
+      <i class="far fa-times-circle"></i> {{ error.mensaje }}
+    </div>
+    {% endif %}
+    <h4><small>Serial</small></h4>
+    <h4 class="margen">{{ datosUsuario.serial }}</h4>
+    <form method="post" action="/profile">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" class="form-control" name="nombre" 
+          value="{{ datosUsuario.nombre }}" required>
+      </div>
+      <div class="form-group">
+        <label for="apellido">Apellido</label>
+        <input type="text" class="form-control" name="apellido"
+          value="{{ datosUsuario.apellido }}" required>
+      </div>
+      <div class="form-group">
+        <label for="tlfn">Teléfono</label>
+        <input type="text" class="form-control" name="tlfn"
+          {% if datosUsuario.tipo == 'USUARIO' %}
+            pattern="[0-9]{9,14}" title="Debe contener entre 9 y 14 números."
+          {% endif %}
+          value="{{ datosUsuario.telefono }}" required>
+      </div>
+      <div {% if error.tipo == 'EMAIL' %} class="form-group has-error"
+           {% else %} class="form-group" 
+           {% endif %}>
+        <label class="control-label" for="email">Email</label>
+        <input type="email" class="form-control" name="email"
+          value="{{ datosUsuario.email }}" required>
+        {% if error.tipo == 'EMAIL' %} 
+          <span class="help-block">{{ error.mensaje }}</span>
+        {% endif %}
+      </div>
+      <div {% if error.tipo == 'PASSWORD' %} class="panel panel-danger has-error"
+           {% else %} class="panel panel-default" 
+           {% endif %}>
+        <div class="panel-body">
+          {% if error.tipo == 'PASSWORD' %} 
+            <span class="help-block">{{ error.mensaje }}</span>
+          {% endif %}
+          <div class="form-group">
+            <label class="control-label" for="pass1">Nueva Contraseña</label>
+            <input type="password" name="pass1" placeholder="Contraseña segura"
+              class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Debe contener al menos 8 caracteres. También debe contener 
+                al menos un número, una mayúscula y una minúscula.">
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="pass2">Repetir Contraseña</label>
+            <input type="password" name="pass2" placeholder="Contraseña segura"
+              class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Debe contener al menos 8 caracteres. También debe contener 
+                al menos un número, una mayúscula y una minúscula.">
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary col-xs-12">Actualizar Datos Personales</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

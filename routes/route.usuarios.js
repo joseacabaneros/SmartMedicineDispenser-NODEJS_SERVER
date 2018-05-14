@@ -1,9 +1,9 @@
 module.exports = function(app, swig, gestorBD) {
 	
-	//REGISTRO de usuario - GET vista
+	//INICIO(REGISTRO) - GET vista
 	app.get("/signup", function(req, res) {
 		
-		var respuesta = swig.renderFile('web/views/registroUsuario.html', {
+		var respuesta = swig.renderFile('web/views/inicio.registro.html', {
 			error: req.session.error,
 			datos: req.session.datos
 		});
@@ -14,8 +14,30 @@ module.exports = function(app, swig, gestorBD) {
 		
 		res.send(respuesta);
 	});
+	
+	//INICIO(LOGIN) - GET vista
+	app.get("/login", function(req, res) {
+		var respuesta = swig.renderFile('web/views/inicio.login.html', {
+			success: req.session.success,
+			error: req.session.error
+		});
+		
+		//Borrar futuras peticiones
+		delete req.session.success;
+		delete req.session.error;
+		
+		res.send(respuesta);
+	});
+	
+	//INICIO(LOGOUT)  - GET boton cerrar sesion
+	app.get('/logout', function (req, res) {
+		//Borrar usuario de la sesion
+		delete req.session.usuario;
+		
+	    res.redirect("/");
+	});
 
-	//REGISTRO de usuario - POST procesar formulario de registro
+	//INICIO(REGISTRO) - POST procesar formulario de registro
 	app.post('/signup', function(req, res) {
 		var pass1 = req.body.password;
 		var pass2 = req.body.password2;
@@ -41,7 +63,7 @@ module.exports = function(app, swig, gestorBD) {
 			var criterio = { email: req.body.email };
 			
 			gestorBD.usuarios.obtenerUsuarios(criterio, function(usuarios) {
-				//Email no registrado - OK
+				//Email no registrado - RIGHT
 				if (usuarios === null || usuarios.length === 0) {
 					var criterio = { serial: req.body.serial };
 					
@@ -115,7 +137,6 @@ module.exports = function(app, swig, gestorBD) {
 							}
 						}
 					});
-					
 				//Email ya registrado - WRONG
 				} else {
 					req.session.error = {
@@ -136,22 +157,8 @@ module.exports = function(app, swig, gestorBD) {
 			});
 		}
 	});
-	
-	//LOGIN de usuario - GET vista
-	app.get("/login", function(req, res) {
-		var respuesta = swig.renderFile('web/views/login.html', {
-			success: req.session.success,
-			error: req.session.error
-		});
-		
-		//Borrar futuras peticiones
-		delete req.session.success;
-		delete req.session.error;
-		
-		res.send(respuesta);
-	});
 
-	//LOGIN de usuario - POST procesar datos de formulario de login
+	//INICIO(LOGIN) - POST procesar datos de formulario de login
 	app.post("/login", function(req, res) {
 		var seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
 				.update(req.body.password).digest('hex');
@@ -174,18 +181,9 @@ module.exports = function(app, swig, gestorBD) {
 				if(tipousuario === "USUARIO"){
 					res.redirect("/dashboard/pillbox/A");
 				}else{
-					res.redirect("/admin");
+					res.redirect("/admin/serials");
 				}
 			}
 		});
 	});
-	
-	//LOGOUT de usuario - POST boton cerrar sesion
-	app.post('/logout', function (req, res) {
-		//Borrar usuario de la sesion
-		delete req.session.usuario;
-		
-	    res.redirect("/");
-	});
-	
 };

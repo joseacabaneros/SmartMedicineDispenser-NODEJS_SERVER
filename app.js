@@ -3,18 +3,25 @@ var express = require('express');
 var app = express();
 app.use(express.static('public'));
 
+//Favicon
+var favicon = require('serve-favicon');
+app.use(favicon(__dirname + '/public/img/favicon.ico'));
+
 //Sesion
 var expressSession = require('express-session');
 app.use(expressSession({
     secret: 'abcdefg',
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: { 
+    	//Caducar sesion despues de 10 minutos sin uso
+    	maxAge: 10 * 60 * 1000
+	}
 }));
 
 //Encriptar password usuario
 var crypto = require('crypto');
 
-//???
 var rest = require('request');
 app.set('rest',rest); 
 
@@ -37,6 +44,20 @@ var moment = require('moment-timezone');
 //Control de usos horarios
 var util = require("./util/util.js");
 util.init(moment);
+
+//Envio de correos de notificacion
+var nodemailer = require('nodemailer');
+var senderEmails = require("./util/senderEmails.js");
+
+//Rutina de comprobacion de "Sin Conexion" de dispensadores registrados
+var scheduleSinConexion = require("./util/scheduleSinConexion.js");
+
+//Telegram bot "SmartMedicineDispenser"
+process.env["NTBA_FIX_319"] = 1;
+var TelegramBot = require('node-telegram-bot-api');
+var token = '584216354:AAE-edHEpXld-bR3pj_duCoTWoMiuNWtpfQ';
+var bot = new TelegramBot(token, {polling: true});
+var handlerTelegramBot = require("./util/handlerTelegramBot.js");
 //*******************************************************************
 
 
@@ -73,21 +94,29 @@ app.use("/admin", routerAdminSession);
 
 //*****************************  VARIABLES  *************************
 app.set('port', 8081);
-app.set('db','mongodb://localhost:27017/prueba');
+app.set('db','mongodb://localhost:27017/smartmedicinedispenser');
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
+app.set('email','smartmedicinedispenser@gmail.com');
+app.set('passemail','smartmedicinedispenser2018');
 //*******************************************************************
 
 
 //*****************************  RUTAS  *****************************
 //Controladores por lógica
 require("./routes/route.usuarios.js")(app, swig, gestorBD);
-require("./routes/route.admin.js")(app, swig, gestorBD);
+require("./routes/route.admin.js")(app, swig, gestorBD, util);
 require("./routes/route.general.js")(app, swig, gestorBD);
 require("./routes/route.dashboard.js")(app, swig, gestorBD, util);
 //API REST de acceso por el 
-require("./api/api.get.js")(app, gestorBD, util);
-require("./api/api.post.js")(app, gestorBD);
+require("./api/api.get.js")(app, gestorBD, util, senderEmails, handlerTelegramBot);
+require("./api/api.post.js")(app, gestorBD, util, senderEmails, handlerTelegramBot);
+//Init senderEmails
+senderEmails.init(app, nodemailer);
+//Init scheduleSinConexion
+scheduleSinConexion.init(gestorBD, util, senderEmails, handlerTelegramBot);
+//Init handlerTelegramBot
+handlerTelegramBot.init(bot, gestorBD, util);
 //*******************************************************************
 
 

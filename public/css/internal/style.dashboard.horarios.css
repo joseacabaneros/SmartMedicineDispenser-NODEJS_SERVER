@@ -61,6 +61,15 @@ small{
 	color: gray;
 }
 
+.margenBottomNone{
+	margin-bottom: 0;
+}
+
+.margenTopNone{
+	margin-top: 0;
+}
+
+
 /* Tab Pastilleros */
 .tab-pastilleros{
     width: 100%;
@@ -152,6 +161,13 @@ small{
 	}
 }
 
+/* Para pantallas < 768px */
+@media only screen and (max-width: 768px){
+	blockquote p span{
+		display: none;
+	}
+}
+
 .margin-bottom{
 	margin-bottom: 10px;
 }
@@ -192,31 +208,53 @@ small{
 
 /* Rojo */ 
 .past-pos-tomada{
-	fill:#FB3838;
+	fill:#808080;
 	stroke:#9C0000;
 	stroke-width:2;
 	stroke-miterlimit:10;
+	
+	-webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -o-transition: all 1s;
+    transition: all 1s;
 }
 
 /* Azul */ 
 .past-pos-programada{
-	fill:#58ACFA;
+	fill:#808080;
 	stroke:#0431B4;
 	stroke-width:2;
 	stroke-miterlimit:10;
+	
+	-webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -o-transition: all 1s;
+    transition: all 1s;
+}
+
+.past-pos-no-disponible{
+	fill:#808080;
+	stroke:#154360;
+	stroke-width:2;
+	stroke-miterlimit:10;
+	
+	-webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -o-transition: all 1s;
+    transition: all 1s;
 }
 
 /* Verde */
 .past-pos-libre{
-	fill:#00D113;
+	fill:#808080;
 	stroke:#044D00;
 	stroke-width:2;
 	stroke-miterlimit:10;
 	
-	-webkit-transition: fill 2s ease-out;
- 	-moz-transition: fill 2s ease-out;
-	-o-transition: fill 2s ease-out;
-	transition: fill 2s ease-out;
+	-webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -o-transition: all 1s;
+    transition: all 1s;
 }
 
 .progress-bar-danger{
@@ -244,6 +282,17 @@ small{
 
 #input-time input{
 	background-color: #FFFFFF;
+}
+
+blockquote{
+	display: none;
+	font-size: 14px;
+	padding: 10px;
+}
+
+blockquote p span{
+	font-size: 14px;
+	font-weight: lighter;
 }
 
 /* Table horarios programados */
