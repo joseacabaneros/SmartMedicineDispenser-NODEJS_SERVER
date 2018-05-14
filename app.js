@@ -93,8 +93,9 @@ app.use("/admin", routerAdminSession);
 
 
 //*****************************  VARIABLES  *************************
-app.set('port', 8081);
-app.set('db','mongodb://localhost:27017/smartmedicinedispenser');
+app.set('port', process.env.PORT || 8081);
+//app.set('db','mongodb://localhost:27017/smartmedicinedispenser');
+app.set('db','mongodb://admin:Administrador2018@ds219130.mlab.com:19130/smartmedicinedispenser');
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
 app.set('email','smartmedicinedispenser@gmail.com');

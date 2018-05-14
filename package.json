@@ -4,7 +4,8 @@
   "description": "SmartMedicineDispenser",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
+    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1",
+	"start": "node app.js"
   },
   "repository": "",
   "keywords": [
