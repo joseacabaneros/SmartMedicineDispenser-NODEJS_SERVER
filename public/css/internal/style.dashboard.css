@@ -52,6 +52,7 @@ body{
 
 #menu-inicio{
     background-color: rgba(26,177,136,0.25);
+    border-radius: 5px;
 	margin-bottom: 20px;
 }
 

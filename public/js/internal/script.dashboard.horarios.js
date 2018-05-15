@@ -84,10 +84,10 @@ function changeResume(){
 	}
 }
 
-function doProgressWidth(tomadas, programadas, libres) {
-	var tomadasWidth = Math.round(tomadas * 100 / 12);
-	var programadasWidth = Math.round(programadas * 100 / 12);
-	var libresWidth = Math.round(libres * 100 / 12);
+function doProgressWidth(tomadas, programadas, libres, tratamiento) {
+	var tomadasWidth = Math.round(tomadas * 100 / tratamiento);
+	var programadasWidth = Math.round(programadas * 100 / tratamiento);
+	var libresWidth = Math.round(libres * 100 / tratamiento);
 	
 	
 	//Tamano de las progress bars
