@@ -30,6 +30,7 @@ $(document).ready(function(){
 			var min = moment().startOf('minute').add(2, 'minutes');
     		//var min = moment().startOf('minute');
 			$('#input-time').data("DateTimePicker").minDate(min);
+			$('#input-time input').val(moment().startOf('minute').add(2, 'minutes').format("HH:mm"));
 		}else
 			$('#input-time').data("DateTimePicker").minDate(false);
     });
