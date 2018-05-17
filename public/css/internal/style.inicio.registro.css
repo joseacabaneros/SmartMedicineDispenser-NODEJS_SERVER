@@ -38,8 +38,8 @@
 	}
 }
 
-/* Para pantallas altura < 760px */
-@media only screen and (max-height: 760px){
+/* Para pantallas altura < 720px */
+@media only screen and (max-height: 720px){
 	.contenedor{
 		align-items: normal;
 	}

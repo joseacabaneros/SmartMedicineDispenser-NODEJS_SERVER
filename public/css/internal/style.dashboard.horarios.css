@@ -199,11 +199,22 @@ small{
 	stroke-miterlimit:10;
 }
 
+/* Gris */ 
 .past-pos-neutro{
-	fill:#606060;
-	stroke:#471B00;
+	fill:#808080;
+}
+
+/* Blanco */ 
+.past-pos-pastillero{
+	fill:#FFFFFF;
+	stroke:#9C0000;
 	stroke-width:2;
 	stroke-miterlimit:10;
+	
+	-webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -o-transition: all 1s;
+    transition: all 1s;
 }
 
 /* Rojo */ 

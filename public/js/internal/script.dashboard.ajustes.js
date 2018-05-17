@@ -73,7 +73,7 @@ $(document).ready(function() {
         	$("#inputTemperaturaMin").prop('disabled', false);
     		$("#inputTemperaturaMax").prop('disabled', false);
         	$("#inputTemperaturaMin").val("15");
-        	$("#inputTemperaturaMax").val("25");
+        	$("#inputTemperaturaMax").val("30");
         }
         else if (this.value === 'no') {
         	$("#inputTemperaturaMin").prop('disabled', true);
@@ -94,7 +94,7 @@ $(document).ready(function() {
         	$("#inputHumedadMin").prop('disabled', false);
     		$("#inputHumedadMax").prop('disabled', false);
         	$("#inputHumedadMin").val("20");
-        	$("#inputHumedadMax").val("75");
+        	$("#inputHumedadMax").val("85");
         }
         else if (this.value === 'no') {
         	$("#inputHumedadMin").prop('disabled', true);

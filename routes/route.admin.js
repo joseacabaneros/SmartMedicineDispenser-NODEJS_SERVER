@@ -161,7 +161,7 @@ module.exports = function(app, swig, gestorBD, util) {
 						}
 					},
 					toma: {
-						tiempoespera: 5,
+						tiempoespera: 3,
 						irdeteccion: true,
 						btnconfirmacion: true
 					},
@@ -184,12 +184,12 @@ module.exports = function(app, swig, gestorBD, util) {
 						temperatura: {
 							estado: true,
 							min: 15,
-							max: 25
+							max: 30
 						},
 						humedad: {
 							estado: true,
 							min: 20,
-							max: 75
+							max: 85
 						},
 						detecciongas: true,
 						deteccioncaida: true

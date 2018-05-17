@@ -80,7 +80,7 @@
             <label for="tiempoEspera" class="col-sm-3 col-md-4 col-lg-3 control-label">Tiempo de Espera</label>
             <div class="col-sm-9 col-md-8 col-lg-9">
               <div class='input-group'>
-                <input type="number" class="form-control" min="3" max="12"
+                <input type="number" class="form-control" min="1" max="10"
                   name="tiempoEspera" value="{{ serialConfig.toma.tiempoespera }}" required>
                 <span class="input-group-addon">Minutos</span>
               </div>
@@ -207,7 +207,7 @@
         <h3>Configurador de Notificaciones</h3>
         <form method="post" action="/dashboard/settings/notifications" class="form-horizontal">
           <div class="form-group">
-            <label for="sinConexionEstado" class="col-sm-3 col-md-4 col-lg-3 control-label">Sin Conexión</label>
+            <label for="sinConexionEstado" class="col-sm-3 col-md-4 col-lg-3 control-label">Pérdida Conexión</label>
             <div class="col-sm-9 col-md-8 col-lg-9">
               <div class="col-xs-4 padding-none">
                 <label class="radio-inline">
@@ -275,7 +275,7 @@
                 <div class="col-sm-6 padding-none">
                   <div class='input-group margenRight'>
                     <span class="input-group-addon">T. <b>&gt</b> </span>
-                    <input type="number" class="form-control" min="20" max="35" name="temperaturaMax"
+                    <input type="number" class="form-control" min="25" max="40" name="temperaturaMax"
                        id="inputTemperaturaMax" value="{{ serialConfig.configuracionnotificaciones.temperatura.max }}" required>
                     <span class="input-group-addon">Cº</span>
                   </div>
@@ -354,14 +354,26 @@
           <p>¿Cuándo se realizan notificaciones?</p>
           <small>
             <ul>
-              <li>Medicación no tomada [Configurable]</li>
               <li>Botón de Emergencia (rojo) pulsado</li>
-              <li>Desconexión del dispensador [Configurable]</li>
-              <li>Pocas pastillas restantes [Configurable]</li>
-              <li>Temperatura del dispensador [Configurable]</li>
-              <li>Humedad del dispensador [Configurable]</li>
-              <li>Detección de gas [Configurable]</li>
-              <li>Detección de caida [Configurable]</li>
+              <li>Medicación no tomada</li>
+              {% if serialConfig.configuracionnotificaciones.sinconexion.estado %}
+                <li>Desconexión del dispensador</li>
+              {% endif %}
+              {% if serialConfig.configuracionnotificaciones.pocaspastillas.estado %}
+                <li>Pocas pastillas restantes</li>
+              {% endif %}
+              {% if serialConfig.configuracionnotificaciones.temperatura.estado  %}
+                <li>Temperatura del dispensador</li>
+              {% endif %}
+              {% if serialConfig.configuracionnotificaciones.humedad.estado  %}
+                <li>Humedad del dispensador</li>
+              {% endif %}
+              {% if serialConfig.configuracionnotificaciones.detecciongas  %}
+                <li>Detección de gas</li>
+              {% endif %}
+              {% if serialConfig.configuracionnotificaciones.deteccioncaida  %}
+                <li>Detección de caida</li>
+              {% endif %}
             </ul>
           </small>
         </div>

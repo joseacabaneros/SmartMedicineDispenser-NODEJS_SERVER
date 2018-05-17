@@ -70,12 +70,19 @@ module.exports = function(app, swig, gestorBD, util) {
 				function getClasesSvg(estado){
 					var clasesSvg = [];
 					var cont = 0;
-					
+					//Posicion reposo
+					if(estado.tomadas > 0){
+						clasesSvg[cont] = "past-pos-neutro";
+						cont++;
+					}
 					//Pastillas tomadas
-					for(var i = 0 ; i < estado.tomadas; i++){
+					for(var i = 0 ; i < (estado.tomadas-1); i++){
 						clasesSvg[cont] = "past-pos-tomada";
 						cont++;
 					}
+					//Posicion pastillero
+					clasesSvg[cont] = "past-pos-pastillero";
+					cont++;
 					//Pastillas programadas
 					for(i = 0 ; i < estado.programadas; i++){
 						clasesSvg[cont] = "past-pos-programada";
@@ -88,7 +95,7 @@ module.exports = function(app, swig, gestorBD, util) {
 					}
 					//Pastillas no disponibles (por tratamiento)
 					var quedan = cont;
-					for(i = 0 ; i < (12-quedan); i++){
+					for(i = 0 ; i < (13-quedan); i++){
 						clasesSvg[cont] = "past-pos-no-disponible";
 						cont++;
 					}

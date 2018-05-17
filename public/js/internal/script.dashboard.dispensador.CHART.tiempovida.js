@@ -87,8 +87,16 @@ function initializeTiempoVida(dataJson){
 		.attr("y", 0)
 		.style("text-anchor", "middle")
 		.attr("transform", "translate(" + gridSize / 2 + ", -6)")
-		.attr("class", function(d, i) { return ((data[data.length-1].hora === parseInt(d)) ? 
-				"axisLabels mono axis axis-minutesNow" : "axisLabels mono axis"); });
+		.attr("class", function(d, i) { 
+			if(data[data.length-1].hora === parseInt(d)){
+				return "axisLabels mono axis axis-minutesNow";
+			}
+			if(parseInt(d) === 0){
+				return "axisLabels mono axis axis-changeDay";
+			}
+			
+			return "axisLabels mono axis"; 
+		});
 	
 	var heatMap = svg.selectAll(".hour")
 		.data(data)
