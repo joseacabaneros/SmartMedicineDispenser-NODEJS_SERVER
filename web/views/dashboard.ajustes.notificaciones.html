@@ -1,0 +1,73 @@
+{% extends "dashboard.ajustes.html" %} 
+
+{% block titulo %} Ajustes-Notificaciones {% endblock %} 
+
+{% block titulo_formulario %}
+  <h3>Notificaciones</h3>
+{% endblock %}
+
+{% block formulario_ajustes %}
+<form method="post" action="/dashboard/settings/notifications" class="form-horizontal">
+  {% for key, val in emailsNotUsuarios %}
+    <div class="form-group">
+      <label for="emailUser" class="col-sm-3 col-md-4 col-lg-3 control-label">Email Usuario</label>
+      <div class="col-sm-9 col-md-8 col-lg-9">
+  	   <input type="email" class="form-control" name="emailUser"
+  		  value="{{ val }}" disabled>
+      </div>
+    </div>
+  {% endfor %}
+  <div class="form-group">
+    <label for="email1" class="col-sm-3 col-md-4 col-lg-3 control-label">Email Extra 1</label>
+    <div class="col-sm-9 col-md-8 col-lg-9">
+  	 <input type="email" class="form-control" name="email1" value="{{ serialConfig.emailsnotificacion[0] }}">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="email2" class="col-sm-3 col-md-4 col-lg-3 control-label">Email Extra 2</label>
+    <div class="col-sm-9 col-md-8 col-lg-9">
+  	 <input type="email" class="form-control" name="email2" value="{{ serialConfig.emailsnotificacion[1] }}">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="telegram" class="col-sm-3 col-md-4 col-lg-3 control-label">Bot Telegram</label>
+    <div class="col-sm-9 col-md-8 col-lg-9 telegramlink">
+  	 <a href="https://telegram.me/SmartMedicineDispenserBot">@SmartMedicineDispenserBot</a>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-md-offset-4 col-lg-offset-3 col-sm-9 col-md-8 col-lg-9">
+  	 <button type="submit" class="btn btn-primary col-xs-12">Guardar Emails</button>
+    </div>
+  </div>
+</form>
+<div class="panel panel-default margenTop">
+  <div class="panel-body">
+    <p>¿Cuándo se realizan notificaciones?</p>
+    <small>
+    <ul>
+      <li>Botón de Emergencia (rojo) pulsado</li>
+      <li>Medicación no tomada</li>
+      {% if serialConfig.configuracionnotificaciones.sinconexion.estado %}
+      <li>Desconexión del dispensador</li>
+      {% endif %}
+      {% if serialConfig.configuracionnotificaciones.pocaspastillas.estado %}
+      <li>Pocas pastillas restantes</li>
+      {% endif %}
+      {% if serialConfig.configuracionnotificaciones.temperatura.estado  %}
+      <li>Temperatura del dispensador</li>
+      {% endif %}
+      {% if serialConfig.configuracionnotificaciones.humedad.estado  %}
+      <li>Humedad del dispensador</li>
+      {% endif %}
+      {% if serialConfig.configuracionnotificaciones.detecciongas  %}
+      <li>Detección de gas</li>
+      {% endif %}
+      {% if serialConfig.configuracionnotificaciones.deteccioncaida  %}
+      <li>Detección de caida</li>
+      {% endif %}
+    </ul>
+    </small>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "dashboard.ajustes.html" %} 
+
+{% block titulo %} Ajustes-Medicación {% endblock %} 
+
+{% block titulo_formulario %}
+  <h3>Toma de Medicación</h3>
+{% endblock %}
+
+{% block formulario_ajustes %}
+<form method="post" action="/dashboard/settings/take" class="form-horizontal">
+  <div class="form-group">
+    <label for="tiempoEspera" class="col-sm-3 col-md-4 col-lg-3 control-label">Tiempo de Espera</label>
+    <div class="col-sm-9 col-md-8 col-lg-9">
+    <div class='input-group'>
+      <input type="number" class="form-control" min="1" max="10"
+      name="tiempoEspera" value="{{ serialConfig.toma.tiempoespera }}" required>
+      <span class="input-group-addon">Minutos</span>
+    </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="deteccion" class="col-sm-3 col-md-4 col-lg-3 control-label">Sensor Detección</label>
+    <div class="col-sm-9 col-md-8 col-lg-9">
+    <label class="radio-inline">
+      <input type="radio" name="deteccion" value="si" 
+      {% if serialConfig.toma.irdeteccion %} checked {% endif %}> SI
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="deteccion" value="no" 
+      {% if !serialConfig.toma.irdeteccion %} checked {% endif %}> NO
+    </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="btnConfirmacion" class="col-sm-3 col-md-4 col-lg-3 control-label">Btn. Confirmación</label>
+    <div class="col-sm-9 col-md-8 col-lg-9">
+    <label class="radio-inline">
+      <input type="radio" name="btnConfirmacion" value="si"
+      {% if serialConfig.toma.btnconfirmacion  %} checked {% endif %}> SI
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="btnConfirmacion" value="no"
+      {% if !serialConfig.toma.btnconfirmacion  %} checked {% endif %}> NO
+    </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-md-offset-4 col-lg-offset-3 col-sm-9 col-md-8 col-lg-9">
+    <button type="submit" class="btn btn-primary col-xs-12">Modificar Toma Medicación</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

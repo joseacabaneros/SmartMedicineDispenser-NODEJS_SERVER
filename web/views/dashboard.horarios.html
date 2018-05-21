@@ -21,8 +21,8 @@
 {% endblock %}
 
 {% block contenido_principal %}
-
 <div class="col-md-12 pagina-interior">
+  <!-- Vista del pastillero seleccionado -->
   <div class="col-sm-12 col-md-7 col-lg-8 pastilleros">
     <ul class="tab-pastilleros" role="tablist">
       <li {% if pastillero == "A" %} class="pastillero-seleccionado" {% endif %} role="tab">
@@ -212,6 +212,8 @@
   <button class="btn-programacion" onclick="changeViewMobile()">
     <i class="far fa-calendar-alt"></i>
   </button>
+  
+  <!-- Formulario de programacion de horarios -->
   <div class="col-sm-12 col-md-5 col-lg-4 programacion">
     <div class="container-fluid">
       <h3>Programación de horarios</h3>

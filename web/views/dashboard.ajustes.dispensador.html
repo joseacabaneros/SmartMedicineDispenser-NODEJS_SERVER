@@ -1,0 +1,52 @@
+{% extends "dashboard.ajustes.html" %} 
+
+{% block titulo %} Ajustes-Dispensador {% endblock %} 
+
+{% block titulo_formulario %}
+  <h3>Dispensador</h3>
+{% endblock %}
+
+{% block formulario_ajustes %}
+<form method="post" action="/dashboard/settings/dispenser" class="form-horizontal">
+  <div class="form-group">
+    <label for="ledNotificacion" class="col-sm-3 col-md-4 col-lg-3 control-label">Led Notificación</label>
+    <div class="col-sm-9 col-md-8 col-lg-9">
+  	<label class="radio-inline">
+  	  <input type="radio" name="ledNotificacion" value="si"
+  		{% if serialConfig.dispensador.lednotificacion  %} checked {% endif %}> SI
+  	</label>
+  	<label class="radio-inline">
+  	  <input type="radio" name="ledNotificacion" value="no"
+  		{% if !serialConfig.dispensador.lednotificacion %} checked {% endif %}> NO
+  	</label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="sonidoNotificacionEstado" class="col-sm-3 col-md-4 col-lg-3 control-label">Sonido Notificación</label>
+    <div class="col-sm-9 col-md-8 col-lg-9">
+    	<div class="col-xs-4 padding-none">
+    	  <label class="radio-inline">
+    		<input type="radio" name="sonidoNotificacionEstado" value="si"
+    		  {% if serialConfig.dispensador.sonidonotificacion.estado %} checked {% endif %}> SI
+    	  </label>
+    	  <label class="radio-inline">
+    		<input type="radio" name="sonidoNotificacionEstado" value="no"
+    		  {% if !serialConfig.dispensador.sonidonotificacion.estado %} checked {% endif %}> NO
+    	  </label>
+    	</div>
+    	<div class="col-xs-8 padding-right-none">
+    	  <div class='input-group'>
+    		<input type="number" class="form-control" min="1" max="60" name="sonidoNotificacionValor"
+    		   id="inputSonido" value="{{ serialConfig.dispensador.sonidonotificacion.valor }}" required>
+    		<span class="input-group-addon">Segundos</span>
+    	  </div>
+    	</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-md-offset-4 col-lg-offset-3 col-sm-9 col-md-8 col-lg-9">
+  	 <button type="submit" class="btn btn-primary col-xs-12">Modificar Dispensador</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

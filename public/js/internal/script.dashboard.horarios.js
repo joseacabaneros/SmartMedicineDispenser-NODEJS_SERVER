@@ -1,4 +1,6 @@
 $(document).ready(function(){
+	$('.btn-programacion').css('margin-bottom', '70px');
+	
 	//Refrescar pagina cada 5 minutos
 	setInterval(function() {
 		window.location.reload();

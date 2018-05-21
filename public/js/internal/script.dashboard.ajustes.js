@@ -1,4 +1,6 @@
 $(document).ready(function() {
+	$('.btn-menu').css('margin-bottom', '70px');
+	
 	//Toma de Medicación
 	$('input[type=radio][name=deteccion]').change(function() {
         if (this.value === 'no' && 
@@ -104,3 +106,14 @@ $(document).ready(function() {
         }
     });
 });
+
+function changeViewMobile(){
+	$('.menu-settings').toggle();
+	$('.formulario-ajustes').toggle();
+	
+	if ($('.formulario-ajustes').is(':visible')) {
+		$('.btn-menu').html('<i class="fas fa-bars"></i>');
+	} else {
+		$('.btn-menu').html('<i class="fas fa-chevron-right"></i>');
+	}
+}

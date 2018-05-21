@@ -1,5 +1,9 @@
 module.exports = function(app, swig, gestorBD, util) {
 	
+	
+	//--------------------------------------------  GET  --------------------------------------------
+	
+	
 	//DASHBOARD(PASTILLEROS/HORARIOS) - GET vista
 	app.get("/dashboard/pillbox/:pastillero", function(req, res) {
 		//Obtener posicion actual del pastillero seleccionado (parametro)
@@ -284,8 +288,74 @@ module.exports = function(app, swig, gestorBD, util) {
 		res.send(respuesta);
 	});
 	
-	//DASHBOARD(AJUSTES) - GET vista
-	app.get("/dashboard/settings", function(req, res) {
+	//DASHBOARD(AJUSTES-TRATAMIENTO) - GET vista
+	app.get("/dashboard/settings/treatment", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		//Obtener ajustes-TRATAMIENTO del dispensador
+		gestorBD.serials.obtenerSerials(criterio, function(serials) {
+			var respuesta = swig.renderFile('web/views/dashboard.ajustes.tratamiento.html', {
+				menu: "ajustes",
+				menuAjustes: "tratamiento",
+				error: req.session.error,
+				success: req.session.success,
+				serialConfig: serials[0]
+			});
+			
+			//Borrar futuras peticiones
+			delete req.session.error;
+			delete req.session.success;
+			
+			res.send(respuesta);
+		});
+	});
+	
+	//DASHBOARD(AJUSTES-TOMA) - GET vista
+	app.get("/dashboard/settings/take", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		//Obtener ajustes-TOMA del dispensador
+		gestorBD.serials.obtenerSerials(criterio, function(serials) {
+			var respuesta = swig.renderFile('web/views/dashboard.ajustes.tomamedicacion.html', {
+				menu: "ajustes",
+				menuAjustes: "toma",
+				error: req.session.error,
+				success: req.session.success,
+				serialConfig: serials[0]
+			});
+			
+			//Borrar futuras peticiones
+			delete req.session.error;
+			delete req.session.success;
+			
+			res.send(respuesta);
+		});
+	});
+	
+	//DASHBOARD(AJUSTES-DISPENSADOR) - GET vista
+	app.get("/dashboard/settings/dispenser", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		//Obtener ajustes-DISPENSADOR del dispensador
+		gestorBD.serials.obtenerSerials(criterio, function(serials) {
+			var respuesta = swig.renderFile('web/views/dashboard.ajustes.dispensador.html', {
+				menu: "ajustes",
+				menuAjustes: "dispensador",
+				error: req.session.error,
+				success: req.session.success,
+				serialConfig: serials[0]
+			});
+			
+			//Borrar futuras peticiones
+			delete req.session.error;
+			delete req.session.success;
+			
+			res.send(respuesta);
+		});
+	});
+	
+	//DASHBOARD(AJUSTES-NOTIFICACIONES) - GET vista
+	app.get("/dashboard/settings/notifications", function(req, res) {
 		var criterio = { serial: req.session.usuario.serial};
 		
 		//Obtener emails de usuarios registrados para el serial del usuario
@@ -299,8 +369,9 @@ module.exports = function(app, swig, gestorBD, util) {
 			
 			//Obtener emails y ajustes del dispensador
 			gestorBD.serials.obtenerSerials(criterio, function(serials) {
-				var respuesta = swig.renderFile('web/views/dashboard.ajustes.html', {
+				var respuesta = swig.renderFile('web/views/dashboard.ajustes.notificaciones.html', {
 					menu: "ajustes",
+					menuAjustes: "notificaciones",
 					error: req.session.error,
 					success: req.session.success,
 					emailsNotUsuarios: emailsUsuarios,
@@ -315,6 +386,34 @@ module.exports = function(app, swig, gestorBD, util) {
 			});
 		});
 	});
+	
+	//DASHBOARD(AJUSTES-CONFIGNOTIF) - GET vista
+	app.get("/dashboard/settings/confignotif", function(req, res) {
+		var criterio = { serial: req.session.usuario.serial};
+		
+		//Obtener ajustes-CONFNOTIF del dispensador
+		gestorBD.serials.obtenerSerials(criterio, function(serials) {
+			var respuesta = swig.renderFile('web/views/dashboard.ajustes.confignotif.html', {
+				menu: "ajustes",
+				menuAjustes: "confignotif",
+				error: req.session.error,
+				success: req.session.success,
+				serialConfig: serials[0]
+			});
+			
+			//Borrar futuras peticiones
+			delete req.session.error;
+			delete req.session.success;
+			
+			res.send(respuesta);
+		});
+	});
+	
+	
+	//------------------------------------------------------------------------------------------------
+	
+	//--------------------------------------------  POST  --------------------------------------------
+	
 	
 	//DASHBOARD(PASTILLEROS/HORARIOS) - POST programacion horarios
 	app.post('/dashboard/pillbox', function (req, res) {
@@ -601,8 +700,8 @@ module.exports = function(app, swig, gestorBD, util) {
 		}
 	});
 	
-	//DASHBOARD(AJUSTES/EMAILS) - POST emails de notificacion
-	app.post("/dashboard/settings/emails", function(req, res) {
+	//DASHBOARD(AJUSTES/NOTIFICACIONES) - POST emails de notificacion
+	app.post("/dashboard/settings/notifications", function(req, res) {
 		var criterio = { serial: req.session.usuario.serial};
 		
 		var serial = { emailsnotificacion: [req.body.email1, req.body.email2] };
@@ -614,11 +713,11 @@ module.exports = function(app, swig, gestorBD, util) {
 					tipo: 'GENERAL'
 				};
 				
-				res.redirect('/dashboard/settings');
+				res.redirect('/dashboard/settings/notifications');
 			}else{
 				req.session.success = 'Emails de notificación modificados con éxito';
 				
-				res.redirect('/dashboard/settings');
+				res.redirect('/dashboard/settings/notifications');
 			}
 		});
 	});
@@ -674,7 +773,7 @@ module.exports = function(app, swig, gestorBD, util) {
 						tipo: 'TRATAMIENTO'
 					};
 					
-					res.redirect('/dashboard/settings');
+					res.redirect('/dashboard/settings/treatment');
 				}else{
 					var criterio = { serial: req.session.usuario.serial};
 					
@@ -685,11 +784,11 @@ module.exports = function(app, swig, gestorBD, util) {
 								tipo: 'GENERAL'
 							};
 							
-							res.redirect('/dashboard/settings');
+							res.redirect('/dashboard/settings/treatment');
 						}else{
 							req.session.success = 'Tratamiento modificado con éxito';
 							
-							res.redirect('/dashboard/settings');
+							res.redirect('/dashboard/settings/treatment');
 						}
 					});
 				}
@@ -729,7 +828,7 @@ module.exports = function(app, swig, gestorBD, util) {
 						tipo: 'TOMA'
 					};
 					
-					res.redirect('/dashboard/settings');
+					res.redirect('/dashboard/settings/take');
 				//OK: No dispone de horarios programados o no se requiere modificar el tiempo de espera
 				}else{
 					var criterio = { serial: req.session.usuario.serial};
@@ -741,11 +840,11 @@ module.exports = function(app, swig, gestorBD, util) {
 								tipo: 'GENERAL'
 							};
 							
-							res.redirect('/dashboard/settings');
+							res.redirect('/dashboard/settings/take');
 						}else{
 							req.session.success = 'Ajustes de toma de medicación modificados con éxito';
 							
-							res.redirect('/dashboard/settings');
+							res.redirect('/dashboard/settings/take');
 						}
 					});
 				}
@@ -780,17 +879,17 @@ module.exports = function(app, swig, gestorBD, util) {
 					tipo: 'GENERAL'
 				};
 				
-				res.redirect('/dashboard/settings');
+				res.redirect('/dashboard/settings/dispenser');
 			}else{
 				req.session.success = 'Ajustes del dispensador modificados con éxito';
 				
-				res.redirect('/dashboard/settings');
+				res.redirect('/dashboard/settings/dispenser');
 			}
 		});
 	});
 	
-	//DASHBOARD(AJUSTES/NOTIFICACIONES) - POST sin conexion, quedan pocas, temperatura, humedad, gas y caida
-	app.post("/dashboard/settings/notifications", function(req, res) {
+	//DASHBOARD(AJUSTES/CONFIGNOTIF) - POST sin conexion, quedan pocas, temperatura, humedad, gas y caida
+	app.post("/dashboard/settings/confignotif", function(req, res) {
 		var criterio = { serial: req.session.usuario.serial};
 		
 		var serial = { 
@@ -851,12 +950,15 @@ module.exports = function(app, swig, gestorBD, util) {
 					tipo: 'GENERAL'
 				};
 				
-				res.redirect('/dashboard/settings');
+				res.redirect('/dashboard/settings/confignotif');
 			}else{
 				req.session.success = 'Ajustes de notificaciones modificados con éxito';
 				
-				res.redirect('/dashboard/settings');
+				res.redirect('/dashboard/settings/confignotif');
 			}
 		});
 	});
+	
+	
+	//------------------------------------------------------------------------------------------------
 };
