@@ -21,6 +21,9 @@
       <nav>
         <ul>
           <li>
+            {{ serialConfig.serial }}
+          </li>
+          <li>
             <a aria-label="Tratamiento" role="menuitem" 
             class="navItem" href="/dashboard/settings/treatment" 
             {% if menuAjustes == 'tratamiento' %} id="item-ajustes-select" {% endif %}>

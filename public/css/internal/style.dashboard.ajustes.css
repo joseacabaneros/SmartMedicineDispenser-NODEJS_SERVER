@@ -17,6 +17,14 @@ nav ul{
 	padding: 0;
 }
 
+nav ul li:first-child{
+	padding: 12px 24px;
+	text-align: center;
+	
+	background-color: #E6E6E6;
+	font-weight: bold;
+}
+
 nav ul li a{
     display: flex;
     align-items: center;

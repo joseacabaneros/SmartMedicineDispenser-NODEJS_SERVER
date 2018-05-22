@@ -61,7 +61,7 @@
       <div class="alert alert-danger" role="alert">
         <i class="far fa-times-circle"></i> 
         <strong>Error al programar horario/s: </strong>
-        {{ error.mensaje }} Opción configurable en <a href='/dashboard/settings'>Ajustes - Toma de Medicación - Tiempo de Espera</a> 
+        {{ error.mensaje }} Opción configurable en <a href='/dashboard/settings/take'>Ajustes - Toma de Medicación - Tiempo de Espera</a> 
         <br/>
         Conflicto con horario: <strong>{{ error.extra }}</strong>
       </div>
@@ -313,7 +313,7 @@
           <i class="far fa-times-circle"></i> 
           El pastillero seleccionado <strong>no dispone de suficientes pastillas 
           </strong>para esta programación. Recuerde que puede configurar el número
-          de pastillas del tratamiento en <a href="/dashboard/settings">Ajustes</a>
+          de pastillas del tratamiento en <a href="/dashboard/settings/treatment">Ajustes</a>
         </div>
         <div class="form-group clearfix">
           <button type="submit" id="button-programar" class="col-xs-12 btn btn-primary">
