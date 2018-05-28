@@ -10,7 +10,7 @@ $(document).ready(function(){
 	$('.past-pos-tomada').css("fill", "#FB3838");
 	$('.past-pos-programada').css("fill", "#58ACFA");
 	$('.past-pos-no-disponible').css("fill", "#1A5276");
-	$('.past-pos-libre').css("fill", "#00D113");
+	$('.past-pos-libre').css("fill", "#16CC4A");
 	
 	//Boton de confimacion de 'Borrar'
 	$('[data-toggle=confirmation]').confirmation({

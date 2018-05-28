@@ -107,17 +107,45 @@ small{
 	width: 100%;
 	text-decoration: none;
 	text-align: center;
-	color: #999999;
+	color: #808080;
 }
 
-.pastillero-seleccionado{
-	color: #FFFFFF !important;
-	background-color: #1AB188 !important;
+#pastillero-a{
+	border-bottom: 3px solid #FBA700;
+	background-color: #FFE7B5;
 }
 
-.pastillero-seleccionado a{
+#pastillero-b{
+	border-bottom: 3px solid #0052CC;
+	background-color: #B5CBF7;
+}
+
+.pastillero-seleccionado-a{
+	color: #FFFFFF !important;
+	background-color: #FBA700 !important;
+}
+
+.pastillero-seleccionado-b{
+	color: #FFFFFF !important;
+	background-color: #0052CC !important;
+}
+
+.pastillero-seleccionado-a a{
 	color: #FFFFFF !important;
 }
+
+.pastillero-seleccionado-b a{
+	color: #FFFFFF !important;
+}
+
+#hr-pastillero-a{
+	border-top: 1px solid #FBA700;
+}
+
+#hr-pastillero-b{
+	border-top: 1px solid #0052CC;
+}
+
 
 /* Para pantallas < 992px */
 @media only screen and (max-width: 992px){
@@ -196,7 +224,16 @@ small{
 /* SVG Pastillero*/
 .past-exterior{
 	fill:#808080;
-	stroke:#606060;
+}
+
+.past-exterior-a{
+	stroke:#FBA700;
+	stroke-width:10;
+	stroke-miterlimit:10;
+}
+
+.past-exterior-b{
+	stroke:#0052CC;
 	stroke-width:10;
 	stroke-miterlimit:10;
 }
@@ -281,7 +318,7 @@ small{
 }
 
 .progress-bar-success{
-	background-color: #00D113;
+	background-color: #16CC4A;
 	width: 0%;
 }
 
