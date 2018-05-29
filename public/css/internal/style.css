@@ -1,4 +1,5 @@
 button{
+	outline: none !important;
 	height: 39px;
 	
 	background-color: #1AB188 !important;
